@@ -44,7 +44,7 @@
     const username = ref('');
     const password = ref('');
     const router = useRouter();
-    const url = 'http://localhost:5000';
+    const url = 'https://esgdz-server.onrender.com';
 
     const handleSubmit = async () => {
         try {
