@@ -1,5 +1,7 @@
 <template>
-  <NuxtPage />
+  <div class="html-div">
+    <NuxtPage />
+  </div>
 </template>
 
 <script setup>
@@ -67,7 +69,14 @@ useHead({
   line-height: 19px;
   color: var(--light-black);
 }
+/* .html-div{
+  width: 100%;
+  max-width: 1500px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} */
 h1{
   font-style: normal;
   font-weight: 700;

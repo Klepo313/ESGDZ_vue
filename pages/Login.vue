@@ -72,7 +72,7 @@
         } catch (error) {
             // Call the function to see the effect
             highlightBorders();
-            console.error('Greška prilikom prijave:', error);
+            console.error('Greška prilikom prijave:', error)
 
             // const popUpLogin = document.getElementById('pop-up-login');
             // popUpLogin.style.display = 'block';

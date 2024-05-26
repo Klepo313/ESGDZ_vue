@@ -205,14 +205,14 @@ h2 {
 .upitnici {
     width: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
     gap: 15px;
 }
 .upitnik {
     height: 62px;
     width: 100%;
-    max-width: 50%;
+    max-width: 400px;
     padding: 18px;
     color: var(--light-dark);
     background-color: #0b79bd30;
