@@ -47,6 +47,13 @@
     const url = 'https://esgdz-server.onrender.com';
 
     const handleSubmit = async () => {
+
+        const spin_icon = document.getElementById("spin-icon");
+        const prijava = document.getElementsByClassName("login-btn-text")[0];
+
+        prijava.style.display = "none";
+        spin_icon.style.display = 'inline';
+
         try {
             const response = await axios.post(`${url}/login`, {
                 username: username.value.toUpperCase(),
@@ -55,11 +62,7 @@
 
             console.log(response.data);
 
-            const spin_icon = document.getElementById("spin-icon");
-            const prijava = document.getElementsByClassName("login-btn-text")[0];
-
-            prijava.style.display = "none";
-            spin_icon.style.display = 'inline';
+            
 
             // Ako prijava uspije, prosljedi korisnika na '/upitnici'
             if (response.data.success) {
@@ -72,6 +75,8 @@
         } catch (error) {
             // Call the function to see the effect
             highlightBorders();
+            prijava.style.display = "inline";
+            spin_icon.style.display = 'none';
             console.error('Greška prilikom prijave:', error)
 
             // const popUpLogin = document.getElementById('pop-up-login');
@@ -219,7 +224,7 @@ input:focus{
 }
 .icon{
     margin-left: 18px;
-    margin-top: 43px;
+    margin-top: 40px;
 }
 button{
     font-weight: 600;
