@@ -122,7 +122,7 @@ const userInfoStore = useUserInfoStore();
 const router = useRouter();
 
 const p_ezu_id = computed(() => {
-    const id = upitnikInfoStore.ezu_id
+    const id = upitnikInfoStore.ezu_id;
     return isNaN(id) ? 0 : parseInt(id);
 });
 
@@ -183,7 +183,6 @@ const fetchAnswers = async () => {
     try {
         const fetchedAnswers = await getAnswersForUpitnik(ezu_id.value);
         answers.value = fetchedAnswers;
-        initializeSelectedCheckboxes();
     } catch (error) {
         throw error;
     }
@@ -196,7 +195,6 @@ const getAnswer = (questionId, field) => {
 
 const handleBlur = async (eou_id, value) => {
     const userId = parseInt(userInfoStore.eko_id);
-    console.log(parseInt(eou_id), value, userId)
     try {
         await setValueForAnswer(parseInt(eou_id), value, userId);
         await fetchAnswers();
@@ -207,7 +205,6 @@ const handleBlur = async (eou_id, value) => {
 
 const handleSelectChange = async (questionId, selectedValue) => {
     const answer = answers.value.find(ans => ans.eou_ept_id === questionId);
-    console.log(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
     if (answer) {
         try {
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
@@ -222,7 +219,6 @@ const handleSelectChange = async (questionId, selectedValue) => {
 
 const handleRadioChange = async (questionId, selectedValue) => {
     const answer = answers.value.find(ans => ans.eou_ept_id === questionId);
-    console.log(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
     if (answer) {
         try {
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
@@ -236,59 +232,30 @@ const handleRadioChange = async (questionId, selectedValue) => {
 };
 
 const handleCheckboxChange = async (questionId, answerId, event) => {
-    // Pretvaramo questionId i answerId u brojčane vrijednosti
-    // questionId = parseInt(questionId);
-    // answerId = parseInt(answerId);
-    console.log(selectedCheckboxes.value[questionId])
     const checkbox = document.getElementById(answerId);
     const isChecked = checkbox.checked;
 
-    // Prvo provjerimo postoje li već odabrani ID-evi za ovaj pitanje
     if (!selectedCheckboxes.value[questionId]) {
         selectedCheckboxes.value[questionId] = [];
     }
 
     if (isChecked) {
-        console.log("Kliknut")
-        // Ako je checkbox označen, dodajemo ID u listu odabranih
         if (!selectedCheckboxes.value[questionId].includes(answerId)) {
             selectedCheckboxes.value[questionId].push(answerId);
         }
     } else {
-        console.log("Nije kliknut")
-        // Ako je checkbox odznačen, uklanjamo ID iz liste odabranih
-        console.log("PRIJE; selectedCheckboxes.value[questionId]: ", selectedCheckboxes.value[questionId])
-
-        /* 
-        const index = array.indexOf(5);
-        if (index > -1) { // only splice array when item is found
-            array.splice(index, 1); // 2nd parameter means remove one item only
-        }
-        */
-
         const index = selectedCheckboxes.value[questionId].indexOf(parseInt(answerId));
-        console.log("Index od " + parseInt(answerId) + " je: " + index);
-        if(index > -1){
+        if (index > -1) {
             selectedCheckboxes.value[questionId].splice(index, 1);
         }
-
-        //selectedCheckboxes.value[questionId] = selectedCheckboxes.value[questionId].filter(id => id !== answerId);
-
-        console.log("POSLIJE; selectedCheckboxes.value[questionId]: ", selectedCheckboxes.value[questionId])
     }
 
-    // Formiramo novi string koji sadrži sve odabrane ID-eve odvojene ;
     const selectedValue = selectedCheckboxes.value[questionId].join(';');
-
-    // Pronalazimo odgovor za trenutno pitanje
     const answer = answers.value.find(ans => ans.eou_ept_id === questionId);
 
     if (answer) {
-        console.log(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
         try {
-            // Spremamo novu vrijednost u bazu
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
-            // Ovdje možete ažurirati lokalno stanje ako je potrebno
         } catch (error) {
             console.error('Error saving answer:', error);
         }
@@ -297,9 +264,8 @@ const handleCheckboxChange = async (questionId, answerId, event) => {
     }
 };
 
-
 const initializeSelectedCheckboxes = () => {
-    selectedCheckboxes.value = {}; // Resetiramo objekt prije inicijalizacije
+    selectedCheckboxes.value = {};
 
     answers.value.forEach(answer => {
         if (answer.eou_ept_id && answer.eou_izborvis) {
@@ -310,23 +276,26 @@ const initializeSelectedCheckboxes = () => {
 };
 
 const isChecked = (questionId, answerId) => {
-    //console.log("Kliknut?: ", selectedCheckboxes.value[questionId].includes(parseInt(answerId)))
     if (selectedCheckboxes.value[questionId]) {
         return selectedCheckboxes.value[questionId].includes(parseInt(answerId));
     }
     return false;
 };
 
-watch(() => props.selectedGroupId, () => {
-    fetchQuestions();
+watch(() => props.selectedGroupId, async () => {
+    await fetchQuestions();
+    await fetchAnswers();
+    initializeSelectedCheckboxes();
 });
 
 onMounted(async () => {
     upitnikInfoStore.initializeStore();
     await fetchQuestions();
     await fetchAnswers();
+    initializeSelectedCheckboxes();
 });
 </script>
+
 
 <style scoped>
 
