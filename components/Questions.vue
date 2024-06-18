@@ -87,17 +87,17 @@
                 <div>
                     <Transition name="fade" mode="out-in">
                         <div v-show="visibleInfo === parseInt(question.ept_id)" class="info_div">
-                        <div class="info_header">
-                            <div class="info_header_headings">
-                                <font-awesome-icon class="info_icon" icon="circle-info" />
-                                <h4>Opis</h4>
+                            <div class="info_header">
+                                <div class="info_header_headings">
+                                    <font-awesome-icon class="info_icon" icon="circle-info" />
+                                    <h4>Opis</h4>
+                                </div>
+                                <font-awesome-icon @click="toggleInfo(question)" class="close_icon" icon="close" size="lg" />
                             </div>
-                            <font-awesome-icon @click="toggleInfo(question)" class="close_icon" icon="close" size="lg" />
+                            <p class="info_text">
+                                {{ question.ept_opis }}
+                            </p>
                         </div>
-                        <p class="info_text">
-                            {{ question.ept_opis }}
-                        </p>
-                    </div>
                     </Transition>
                 </div>
             </div>
