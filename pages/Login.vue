@@ -44,7 +44,8 @@
     const username = ref('');
     const password = ref('');
     const router = useRouter();
-    const url = 'https://esgdz-server.onrender.com';
+    const public_url = 'https://esgdz-server.onrender.com';
+    const local_url = 'http://localhost:5000';
 
     const handleSubmit = async () => {
 
@@ -55,7 +56,7 @@
         spin_icon.style.display = 'inline';
 
         try {
-            const response = await axios.post(`${url}/login`, {
+            const response = await axios.post(`${local_url}/login`, {
                 username: username.value.toUpperCase(),
                 password: password.value
             });
