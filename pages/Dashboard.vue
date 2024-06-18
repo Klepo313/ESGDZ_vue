@@ -1,5 +1,6 @@
 <template>
     <div>
+        <AutoSavePopUp />
         <ScrollToTop />
         <div class="grid">
             <nuxt-link to="/" tag="div" class="grid-element img-section">
