@@ -56,7 +56,7 @@
         spin_icon.style.display = 'inline';
 
         try {
-            const response = await axios.post(`${local_url}/login`, {
+            const response = await axios.post(`${public_url}/login`, {
                 username: username.value.toUpperCase(),
                 password: password.value
             });
