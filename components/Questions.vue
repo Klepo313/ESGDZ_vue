@@ -48,13 +48,19 @@
 
                     <!-- ODABERI VIŠESTRUKE OPCIJE unos -->
                     <form v-else-if="question.ept_vrstaodg == 'IZBORVIS'" action="">
-                        <label class="checkbox_button" v-for="answer in question.possibleAnswers">
-                            <input class="checkbox_icon" type="checkbox" :id="answer.eso_odgovor" :name="answer.eso_odgovor">
-                            <label :for="answer.eso_odgovor">{{ answer.eso_odgovor }}</label>
+                        <label class="checkbox_button" v-for="answer in question.possibleAnswers" :key="answer.eso_id">
+                            <input 
+                                class="checkbox_icon" 
+                                type="checkbox" 
+                                :id="answer.eso_id" 
+                                :name="answer.eso_odgovor"
+                                @change="handleCheckboxChange(question.ept_id, answer.eso_id, $event)"
+                                :checked="isChecked(question.ept_id, answer.eso_id)"
+                            >
+                            <label :for="answer.eso_id">{{ answer.eso_odgovor }}</label>
                         </label>
                     </form>
 
-                    <!--*question.quest_vrstaodg == 'IZBORVIS'-->
                     <!-- DA/NE unos -->
                     <form v-else-if="question.ept_vrstaodg == 'DN'" action="">
                         <div class="radio_button">
@@ -75,34 +81,12 @@
                         </div>
                     </form>
 
-                    <!-- <form v-else-if="question.ept_vrstaodg == 'DN'" action="">
-                        <div class="radio_button">
-                            <input 
-                                type="radio" 
-                                id="da" 
-                                name="answer"
-                                :value="getAnswer(question.ept_id, 'eou_eso_id') === 'DA' ? 'DA' : ''" 
-                                @change="handleRadioChange(question.ept_id, 'DA')"
-                            >
-                            <label for="da">Da</label>
-                        </div>
-                        <div class="radio_button">
-                            <input 
-                                type="radio"
-                                id="ne" 
-                                name="answer"
-                                :value="getAnswer(question.ept_id, 'eou_eso_id') === 'NE' ? 'NE' : ''" 
-                                @change="handleRadioChange(question.ept_id, 'NE')"
-                            >
-                            <label for="ne">Ne</label>
-                        </div>
-                    </form> -->
                     <font-awesome-icon v-if="question.ept_opis" class="info_icon" icon="circle-info" 
                         @click="toggleInfo(question)" />
                 </div>
                 <div>
                     <Transition name="fade" mode="out-in">
-                        <div v-show="visibleInfo === parseInt(question.ept_id)" class="info_div"> <!--v-if="visibleInfo.value === String(question.quest_rbr)"-->
+                        <div v-show="visibleInfo === parseInt(question.ept_id)" class="info_div">
                         <div class="info_header">
                             <div class="info_header_headings">
                                 <font-awesome-icon class="info_icon" icon="circle-info" />
@@ -122,7 +106,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, defineProps } from 'vue';
+import { ref, onMounted, watch, computed, defineProps } from 'vue';
 import { useRouter } from 'vue-router';
 import { getQuestionsForGroup, getAnswersForUpitnik, setValueForAnswer } from '~/services/services';
 import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
@@ -150,12 +134,7 @@ const ezu_id = computed(() => {
 const questions = ref([]);
 const answers = ref(null);
 const visibleInfo = ref(0); 
-
-// watch(() => router.currentRoute.value.hash, (newHash, oldHash) => {
-//     if (newHash === '' || newHash === '#') {
-//         questions.value = []; // Isprazni pitanja ako se hash promijeni na '/' ili '#'
-//     }
-// });
+const selectedCheckboxes = ref(null);
 
 // Funkcija za dobivanje ID-a grupe iz hasha URL-a
 const getGroupIdFromHash = () => {
@@ -204,6 +183,7 @@ const fetchAnswers = async () => {
     try {
         const fetchedAnswers = await getAnswersForUpitnik(ezu_id.value);
         answers.value = fetchedAnswers;
+        initializeSelectedCheckboxes();
     } catch (error) {
         throw error;
     }
@@ -219,15 +199,15 @@ const handleBlur = async (eou_id, value) => {
     console.log(parseInt(eou_id), value, userId)
     try {
         await setValueForAnswer(parseInt(eou_id), value, userId);
-        await fetchAnswers()
+        await fetchAnswers();
     } catch (error) {
-        console.error('Error saving answer:', error)
+        console.error('Error saving answer:', error);
     }
 };
 
 const handleSelectChange = async (questionId, selectedValue) => {
     const answer = answers.value.find(ans => ans.eou_ept_id === questionId);
-    console.log(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id))
+    console.log(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
     if (answer) {
         try {
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
@@ -255,16 +235,97 @@ const handleRadioChange = async (questionId, selectedValue) => {
     }
 };
 
+const handleCheckboxChange = async (questionId, answerId, event) => {
+    // Pretvaramo questionId i answerId u brojčane vrijednosti
+    // questionId = parseInt(questionId);
+    // answerId = parseInt(answerId);
+    console.log(selectedCheckboxes.value[questionId])
+    const checkbox = document.getElementById(answerId);
+    const isChecked = checkbox.checked;
+
+    // Prvo provjerimo postoje li već odabrani ID-evi za ovaj pitanje
+    if (!selectedCheckboxes.value[questionId]) {
+        selectedCheckboxes.value[questionId] = [];
+    }
+
+    if (isChecked) {
+        console.log("Kliknut")
+        // Ako je checkbox označen, dodajemo ID u listu odabranih
+        if (!selectedCheckboxes.value[questionId].includes(answerId)) {
+            selectedCheckboxes.value[questionId].push(answerId);
+        }
+    } else {
+        console.log("Nije kliknut")
+        // Ako je checkbox odznačen, uklanjamo ID iz liste odabranih
+        console.log("PRIJE; selectedCheckboxes.value[questionId]: ", selectedCheckboxes.value[questionId])
+
+        /* 
+        const index = array.indexOf(5);
+        if (index > -1) { // only splice array when item is found
+            array.splice(index, 1); // 2nd parameter means remove one item only
+        }
+        */
+
+        const index = selectedCheckboxes.value[questionId].indexOf(parseInt(answerId));
+        console.log("Index od " + parseInt(answerId) + " je: " + index);
+        if(index > -1){
+            selectedCheckboxes.value[questionId].splice(index, 1);
+        }
+
+        //selectedCheckboxes.value[questionId] = selectedCheckboxes.value[questionId].filter(id => id !== answerId);
+
+        console.log("POSLIJE; selectedCheckboxes.value[questionId]: ", selectedCheckboxes.value[questionId])
+    }
+
+    // Formiramo novi string koji sadrži sve odabrane ID-eve odvojene ;
+    const selectedValue = selectedCheckboxes.value[questionId].join(';');
+
+    // Pronalazimo odgovor za trenutno pitanje
+    const answer = answers.value.find(ans => ans.eou_ept_id === questionId);
+
+    if (answer) {
+        console.log(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
+        try {
+            // Spremamo novu vrijednost u bazu
+            await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
+            // Ovdje možete ažurirati lokalno stanje ako je potrebno
+        } catch (error) {
+            console.error('Error saving answer:', error);
+        }
+    } else {
+        console.error('Answer not found for questionId:', questionId);
+    }
+};
+
+
+const initializeSelectedCheckboxes = () => {
+    selectedCheckboxes.value = {}; // Resetiramo objekt prije inicijalizacije
+
+    answers.value.forEach(answer => {
+        if (answer.eou_ept_id && answer.eou_izborvis) {
+            const selectedIds = answer.eou_izborvis.split(';').map(id => parseInt(id));
+            selectedCheckboxes.value[answer.eou_ept_id] = selectedIds;
+        }
+    });
+};
+
+const isChecked = (questionId, answerId) => {
+    //console.log("Kliknut?: ", selectedCheckboxes.value[questionId].includes(parseInt(answerId)))
+    if (selectedCheckboxes.value[questionId]) {
+        return selectedCheckboxes.value[questionId].includes(parseInt(answerId));
+    }
+    return false;
+};
+
 watch(() => props.selectedGroupId, () => {
     fetchQuestions();
 });
 
-onMounted( async ()=> {
-    upitnikInfoStore.initializeStore()
-    await fetchQuestions()
-    await fetchAnswers()
-})
-
+onMounted(async () => {
+    upitnikInfoStore.initializeStore();
+    await fetchQuestions();
+    await fetchAnswers();
+});
 </script>
 
 <style scoped>

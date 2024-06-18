@@ -131,7 +131,7 @@ const addToBreadcrumb = (group) => {
 const displayQuestions = (group) => {
     addToBreadcrumb(group);
     // Provjeri postoji li podniz possibleAnswers u grupi
-    if (!group.children || !group.children.length > 0) {
+    if (group.questions != 0 || !group.children || !group.children.length > 0) {
         // Emitiramo event s ID-jem grupe
         emit('group-selected', group.id);
         navigateTo(`/#${group.id}`);

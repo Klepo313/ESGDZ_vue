@@ -1,8 +1,11 @@
 import axios from 'axios';
 
+const public_url = 'https://esgdz-server.onrender.com';
+const local_url = 'http://localhost:5000';
+
 export async function getVrsteUpitnika() {
     try {
-        const response = await axios.get(`https://esgdz-server.onrender.com/upitnici`);
+        const response = await axios.get(`${local_url}/upitnici`);
         return response.data;
     } catch (error) {
         console.error('Pogreška prilikom dohvaćanja upitnika:', error);
@@ -12,7 +15,7 @@ export async function getVrsteUpitnika() {
 
 export async function getUpitnici(userName, firmId){
     try {
-        const response = await axios.get(`https://esgdz-server.onrender.com/upitnici/${userName}/${parseInt(firmId)}`);
+        const response = await axios.get(`${local_url}/upitnici/${userName}/${parseInt(firmId)}`);
         return response.data;
     } catch (error) {
         console.error('Pogreška prilikom dohvaćanja upitnika:', error);
@@ -22,7 +25,7 @@ export async function getUpitnici(userName, firmId){
 
 export async function getUpitnikData(esg_sif){
     try {
-        const response = await axios.get(`https://esgdz-server.onrender.com/struktura/${esg_sif}`);
+        const response = await axios.get(`${local_url}/struktura/${esg_sif}`);
         return response.data;
     } catch (error) {
         throw error;
@@ -31,7 +34,7 @@ export async function getUpitnikData(esg_sif){
 
 export async function getGroupsData(ess_id){
     try {
-        const response = await axios.get(`https://esgdz-server.onrender.com/groups/${ess_id}`);
+        const response = await axios.get(`${local_url}/groups/${ess_id}`);
         return response.data;
     } catch (error) {
         throw error;
@@ -40,7 +43,7 @@ export async function getGroupsData(ess_id){
 
 export async function getQuestionsForGroup(epu_id, ess_id){
     try {
-        const response = await axios.get(`https://esgdz-server.onrender.com/questions/${epu_id}/${ess_id}`)
+        const response = await axios.get(`${local_url}/questions/${epu_id}/${ess_id}`)
         return response.data;
     } catch (error) {
         throw error;
@@ -49,7 +52,7 @@ export async function getQuestionsForGroup(epu_id, ess_id){
 
 export async function getAnswersForUpitnik(p_ezu_id){
     try {
-        const response = await axios.get(`https://esgdz-server.onrender.com/odg/${p_ezu_id}`)
+        const response = await axios.get(`${local_url}/odg/${p_ezu_id}`)
         return response.data;
     } catch (error) {
         throw error;
@@ -58,7 +61,7 @@ export async function getAnswersForUpitnik(p_ezu_id){
 
 export async function setValueForAnswer(p_eou_id, p_vrijednost, p_kor_id){
     try {
-        const response = await axios.get('https://esgdz-server.onrender.com/save-answer', {
+        const response = await axios.get(`${local_url}/save-answer`, {
             params: {
                 p_eou_id,
                 p_vrijednost,
@@ -74,7 +77,7 @@ export async function setValueForAnswer(p_eou_id, p_vrijednost, p_kor_id){
 
 export async function createNewUpitnik(p_kor_id, p_evu_sif){
     try {
-        const response = await axios.get('https://esgdz-server.onrender.com/create-upitnik', {
+        const response = await axios.get(`${local_url}/create-upitnik`, {
             params: {
                 p_kor_id,
                 p_evu_sif
