@@ -134,7 +134,7 @@ const ezu_id = computed(() => {
 const questions = ref([]);
 const answers = ref(null);
 const visibleInfo = ref(0); 
-const selectedCheckboxes = ref(null);
+const selectedCheckboxes = ref({});
 
 // Funkcija za dobivanje ID-a grupe iz hasha URL-a
 const getGroupIdFromHash = () => {
