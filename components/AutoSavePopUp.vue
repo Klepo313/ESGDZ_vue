@@ -27,7 +27,7 @@ onMounted(() => {
 
 <style scoped>
 .popup {
-    position: absolute;
+    position: fixed;
     top: 20px;
     right: 20px;
     width: auto;
@@ -35,6 +35,7 @@ onMounted(() => {
     border-radius: 5px;
     border: 0.5px solid rgba(11, 121, 189, 0.500);
     overflow: hidden;
+    z-index: 99;
 }
 
 .popup .content {
