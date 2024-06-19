@@ -22,6 +22,7 @@
                         placeholder="Unesi tekst"
                         :value="getAnswer(question.ept_id, 'eou_tekst')"
                         @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value)"
+                        :disabled="finishedUpitnik"
                         >
 
                     <!-- NUMERIČKI unos -->
@@ -31,6 +32,7 @@
                         placeholder="Unesi broj"
                         :value="getAnswer(question.ept_id, 'eou_broj')"
                         @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value)"
+                        :disabled="finishedUpitnik"
                         >
                     
                     <!-- ODABERI OPCIJU unos -->
@@ -39,6 +41,7 @@
                         id="select_option" 
                         :value="getAnswer(question.ept_id, 'eou_eso_id') || 'default'"
                         @change="handleSelectChange(question.ept_id, $event.target.value)"
+                        :disabled="finishedUpitnik"
                     >
                         <option value="default" class="select_placeholder" selected disabled>-- Odaberi opciju --</option>
                         <option v-for="answer in question.possibleAnswers" :key="answer.eso_id" :value="answer.eso_id" >
@@ -56,6 +59,7 @@
                                 :name="answer.eso_odgovor"
                                 @change="handleCheckboxChange(question.ept_id, answer.eso_id, $event)"
                                 :checked="isChecked(question.ept_id, answer.eso_id)"
+                                :disabled="finishedUpitnik"
                             >
                             <label :for="answer.eso_id">{{ answer.eso_odgovor }}</label>
                         </label>
@@ -68,6 +72,7 @@
                                 :value="'Da'" 
                                 :checked="getAnswer(question.ept_id, 'eou_tekst') === 'Da'" 
                                 @change="handleRadioChange(question.ept_id, 'Da')"
+                                :disabled="finishedUpitnik"
                             >
                             <label :for="question.ept_id">Da</label>
                         </div>
@@ -76,6 +81,7 @@
                                 :value="'Ne'" 
                                 :checked="getAnswer(question.ept_id, 'eou_tekst') === 'Ne'" 
                                 @change="handleRadioChange(question.ept_id, 'Ne')"
+                                :disabled="finishedUpitnik"
                             >
                             <label :for="question.ept_id+1">Ne</label>
                         </div>
@@ -130,6 +136,8 @@ const ezu_id = computed(() => {
     const id = upitnikInfoStore.getEzuId;
     return isNaN(id) ? 0 : parseInt(id);
 });
+
+const finishedUpitnik = computed(() => upitnikInfoStore.finished);
 
 const questions = ref([]);
 const answers = ref(null);

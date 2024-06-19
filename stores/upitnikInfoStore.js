@@ -9,6 +9,7 @@ export const useUpitnikInfoStore = defineStore('upitnik', {
         ess_id: null,
         ezu_naziv: null,
         ezu_mijenjao: null,
+        finished: false,
     }),
     actions: {
         // this.eko_par_id_za = localStorage.getItem('eko_par_id_za');
@@ -20,6 +21,7 @@ export const useUpitnikInfoStore = defineStore('upitnik', {
             this.ess_id = localStorage.getItem('ess_id');
             this.ezu_naziv = localStorage.getItem('ezu_naziv');
             this.ezu_mijenjao = localStorage.getItem('ezu_mijenjao');
+            this.finished = localStorage.getItem('finished');
         },
         setEvuSif(evu_sif) {
             this.evu_sif = evu_sif;
@@ -63,6 +65,12 @@ export const useUpitnikInfoStore = defineStore('upitnik', {
                 localStorage.setItem('ezu_mijenjao', ezu_mijenjao);
             }
         },
+        setFinished(finished) {
+            this.finished = finished;
+            if (process.client) {
+                localStorage.setItem('finished', finished);
+            }
+        },
         clearUpitnikInfo(){
             this.evu_sif = null;
             this.ezu_ess_id = null;
@@ -90,5 +98,6 @@ export const useUpitnikInfoStore = defineStore('upitnik', {
         getEssId: state => state.ess_id,
         getEzuNaziv: state => state.ezu_naziv,
         getEzuMijenjao: state => state.ezu_mijenjao,
+        getFinished: state => state.finished,
     }
 });

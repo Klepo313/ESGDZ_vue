@@ -20,6 +20,24 @@
             </form >
         </div>
     </div>
+
+    <div class="pop-up" v-if="isFinishPopupVisible">
+        <div class="pop-up-container">
+            <div class="pp-heading">
+                <font-awesome-icon class="info_icon" icon="circle-info" size="lg"/>
+                Ovom radnjom upitnik će biti zaključan i neće biti moguće dalje uređivanje.
+                <span class="secQuestion">Želite li nastaviti dalje?</span>
+                <font-awesome-icon @click="toggleFinishPopup" class="pp-icon-close" icon="close" size="lg" />
+            </div>
+            <form class="pp-content" style="gap: 5px;">
+                <button class="cancelBtn" type="button" @click="toggleFinishPopup">Odustani</button>
+                <button class="finishBtn" id="finishUpitnikBtn" type="button" @click.prevent="lockUpitnik"> <!--@click.prevent=""-->
+                    <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg"/>
+                    Zaključaj upitnik
+                </button>
+            </form >
+        </div>
+    </div>
     
     <header>
         <div class="hello-div">
@@ -29,7 +47,11 @@
             </span>
         </div>
         <div class="buttons">
-            <button v-if="isUpitnikRoute" @click="togglePopup(); fetchVrsteUpitnika();" class="newUpitnik_btn">
+            <button v-if="isDashboardRoute" class="activeButton" @click="toggleFinishPopup">
+                <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg"/>
+                Zaključaj upitnik
+            </button>
+            <button v-if="isUpitnikRoute" @click="togglePopup(); fetchVrsteUpitnika();" class="activeButton">
                 <font-awesome-icon class="nav-icon" icon="file-circle-plus" size="lg" />
                 Novi upitnik
             </button>
@@ -46,12 +68,14 @@
 import { defineProps, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUserInfoStore } from '#imports';
+import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
 // import { useUpitnikInfoStore } from '#imports';
 import { getVrsteUpitnika, createNewUpitnik } from '~/services/services';
 
 const route = useRoute();
 const router = useRouter();
 const userInfoStore = useUserInfoStore();
+const upitnikInfoStore = useUpitnikInfoStore();
 // const upitnikInfoStore = useUpitnikInfoStore();
 
 const vrsteUpitnika = ref([]);
@@ -87,13 +111,25 @@ const greetingText = computed(() => getGreetingText());
 // Je li '/upitnik'
 const isUpitnikRoute = computed(() => route.path === '/upitnik');
 
+const isDashboardRoute = computed(() => route.path === '/');
+
 // Reactive property to control popup visibility
 const isPopupVisible = ref(false);
+const isFinishPopupVisible = ref(false);
 let pop_up = null;
 
 const togglePopup = () => {
   isPopupVisible.value = !isPopupVisible.value;
 };
+
+const toggleFinishPopup = () => {
+    isFinishPopupVisible.value =!isFinishPopupVisible.value;
+};
+
+const lockUpitnik = () => {
+    upitnikInfoStore.finished = true;
+    isFinishPopupVisible.value =!isFinishPopupVisible.value;
+}
 
 watch(isPopupVisible, (newValue) => {
     if (newValue) {
@@ -183,7 +219,7 @@ header {
     height: 100%;
     border-radius: 5px;
 }
-.newUpitnik_btn{
+.activeButton{
     font-weight: 600;
     color: white;
     background-color: var(--primary-color);
@@ -193,10 +229,10 @@ header {
     cursor: pointer;
     transform: scale(1.1);
 }
-.newUpitnik_btn:hover{
+.activeButton:hover{
     background-color: var(--primary_hovered);
 }
-.newUpitnik_btn:active{
+.activeButton:active{
     background-color: var(--primary_clicked);
 }
 .logout_btn{
@@ -245,10 +281,10 @@ header {
 }
 .pp-heading{
     width: 100%;
-    font-weight: bold;
+    font-weight: 400;
     position: relative;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     gap: 15px;
 }
@@ -265,6 +301,10 @@ header {
     justify-content: space-between;
     gap: 20px;
 }
+.secQuestion{
+    /* color: var(--primary-color); */
+    font-weight: bold;
+}
 .select-icon{
     position: absolute;
     top: 50%;
@@ -279,11 +319,11 @@ header {
     border-radius: 5px;
     background-color: var(--primary-color);
 }
-#createBtn:hover{
+#createBtn:hover, .finishBtn:hover{
     cursor: pointer;
     background-color: var(--primary_hovered);
 }
-#createBtn:active{
+#createBtn:active, .finishBtn:active{
     background-color: var(--primary_clicked);
 }
 .v-select{
@@ -293,6 +333,29 @@ header {
     max-height: 200px; /* Adjust the max-height */
     overflow-y: auto; /* Enable vertical scroll */
     z-index: 9999; /* Ensure dropdown appears above other elements */
+}
+.cancelBtn, .finishBtn{
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    padding: 12px 0px;
+    border-radius: 5px;
+}
+.finishBtn{
+    background-color: var(--primary-color);
+}
+.cancelBtn{
+    width: auto;
+    outline: none;
+    background: none;
+    padding: 12px;
+    color: black;
+    font-weight: 400;
+}
+.cancelBtn:hover{
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 /* Media Queries for responsiveness */
