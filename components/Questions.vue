@@ -184,6 +184,10 @@ const fetchQuestions = async () => {
         } catch (error) {
             console.error(error);
         }
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
 };
 
@@ -258,12 +262,16 @@ const handleCheckboxChange = async (questionId, answerId, event) => {
         }
     }
 
-    const selectedValue = selectedCheckboxes.value[questionId].join(';');
+    const selectedValue = selectedCheckboxes.value[questionId].length > 0
+        ? selectedCheckboxes.value[questionId].join(';')
+        : null;
+
     const answer = answers.value.find(ans => ans.eou_ept_id === questionId);
 
     if (answer) {
         try {
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
+            await fetchAnswers(); // osvežavanje odgovora
         } catch (error) {
             console.error('Error saving answer:', error);
         }
