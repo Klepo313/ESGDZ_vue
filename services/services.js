@@ -43,7 +43,7 @@ export async function getGroupsData(ess_id){
 
 export async function getQuestionsForGroup(epu_id, ess_id){
     try {
-        const response = await axios.get(`${public_url}/questions/${epu_id}/${ess_id}`)
+        const response = await axios.get(`${public_url}/questions/${epu_id}/${ess_id}`);
         return response.data;
     } catch (error) {
         throw error;
