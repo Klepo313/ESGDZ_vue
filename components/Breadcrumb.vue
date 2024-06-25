@@ -12,8 +12,9 @@
 
         <!-- Ostali linkovi iz breadcrumba -->
         <div v-for="group in breadcrumber" :key="group.id" class="link">
-            <li>{{ group.name }}</li>
-            <span class="separator" v-if="breadcrumber.length > 0 && group.questions == 0">/</span>
+            <li>{{ truncateName(group.name) }}</li>
+            <span class="separator"
+                v-if="breadcrumber.length > 0 && (group.questions == 0 || group.nodes != 0)">/</span>
         </div>
     </ol>
 </template>
@@ -38,19 +39,20 @@ const breadcrumber = ref([]);
 
 function findPathById(array, targetId) {
     let path = [];
-    
+
     function search(node, targetId, currentPath) {
-        currentPath.push({ 
-            id: node.id, 
+        currentPath.push({
+            id: node.id,
             name: node.name,
             questions: node.questions,
+            nodes: node.nodes
         });
-        
+
         if (node.id === targetId) {
             path = [...currentPath];
             return true;
         }
-        
+
         if (node.children) {
             for (let child of node.children) {
                 if (search(child, targetId, currentPath)) {
@@ -58,18 +60,23 @@ function findPathById(array, targetId) {
                 }
             }
         }
-        
+
         currentPath.pop();
         return false;
     }
-    
+
     for (let item of array) {
         if (search(item, targetId, [])) {
             break;
         }
     }
-    
+
     return path;
+}
+
+// Funkcija za skraćivanje naziva
+function truncateName(name, maxLength = 30) {
+    return name.length > maxLength ? name.slice(0, maxLength) + '...' : name;
 }
 
 watch(() => props.selectedGroupId, (newId) => {
@@ -127,7 +134,7 @@ function getCurrentIdFromPath(path) {
     const parts = path.split('/');
     const lastPart = parts[parts.length - 1];
     const groupIdFromPath = parseInt(lastPart);
-    
+
     // Ako je groupIdFromPath NaN, vrati null
     if (isNaN(groupIdFromPath)) {
         return null;
@@ -190,8 +197,7 @@ watch(() => props.selectedGroupId, () => {
 
 
 <style scoped>
-
-ol{
+ol {
     list-style-type: none;
 
     display: flex;
@@ -199,14 +205,15 @@ ol{
     align-items: center;
     gap: 10px;
 }
-li{
+
+li {
     text-align: center;
 }
-.link{
+
+.link {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 10px;
 }
-
 </style>
