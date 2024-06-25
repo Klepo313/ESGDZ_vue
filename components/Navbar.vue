@@ -8,7 +8,8 @@
             </div>
             <form class="pp-content">
                 <h4>Vrsta upitnika</h4>
-                <select name="select_option" id="select_option" required v-model="selectedEvuSif" @change="handleChange">
+                <select name="select_option" id="select_option" required v-model="selectedEvuSif"
+                    @change="handleChange">
                     <option value="" disabled>-- Odaberi opciju --</option>
                     <option v-for="upitnik in vrsteUpitnika" :value="upitnik.evu_sif" :key="upitnik.ess_id">
                         {{ upitnik.evu_naziv }}
@@ -17,40 +18,41 @@
                 <!-- <font-awesome-icon icon="chevron-down" class="select-icon" size="lg" /> -->
                 <!-- Update your button to call the new async method -->
                 <button type="submit" id="createBtn" @click.prevent="handleButtonClick">Kreiraj upitnik</button>
-            </form >
+            </form>
         </div>
     </div>
 
     <div class="pop-up" v-if="isFinishPopupVisible">
         <div class="pop-up-container">
             <div class="pp-heading">
-                <font-awesome-icon class="info_icon" icon="circle-info" size="lg"/>
+                <font-awesome-icon class="info_icon" icon="circle-info" size="lg" />
                 Ovom radnjom upitnik će biti zaključan i neće biti moguće dalje uređivanje.
                 <span class="secQuestion">Želite li nastaviti dalje?</span>
                 <font-awesome-icon @click="toggleFinishPopup" class="pp-icon-close" icon="close" size="lg" />
             </div>
             <form class="pp-content" style="gap: 5px;">
                 <button class="cancelBtn" type="button" @click="toggleFinishPopup">Odustani</button>
-                <button class="finishBtn" id="finishUpitnikBtn" type="button" @click.prevent="lockUpitnik"> <!--@click.prevent=""-->
-                    <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg"/>
+                <button class="finishBtn" id="finishUpitnikBtn" type="button" @click.prevent="lockUpitnik">
+                    <!--@click.prevent=""-->
+                    <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg" />
                     Zaključaj upitnik
                 </button>
-            </form >
+            </form>
         </div>
     </div>
-    
+
     <header>
         <div class="hello-div">
             <div class="dec-div" />
             <span class="greeting_text">
-                {{ greetingText }} <span class="greeting_name">{{ korKorime }}</span> 
+                {{ greetingText }} <span class="greeting_name">{{ korKorime }}</span>
             </span>
         </div>
         <div class="buttons">
-            <button v-if="isDashboardRoute" class="activeButton" @click="toggleFinishPopup">
+            <!-- <button v-if="isDashboardRoute" class="activeButton" @click="toggleFinishPopup">
                 <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg"/>
                 Zaključaj upitnik
-            </button>
+            </button> -->
             <button v-if="isUpitnikRoute" @click="togglePopup(); fetchVrsteUpitnika();" class="activeButton">
                 <font-awesome-icon class="nav-icon" icon="file-circle-plus" size="lg" />
                 Novi upitnik
@@ -119,16 +121,16 @@ const isFinishPopupVisible = ref(false);
 let pop_up = null;
 
 const togglePopup = () => {
-  isPopupVisible.value = !isPopupVisible.value;
+    isPopupVisible.value = !isPopupVisible.value;
 };
 
 const toggleFinishPopup = () => {
-    isFinishPopupVisible.value =!isFinishPopupVisible.value;
+    isFinishPopupVisible.value = !isFinishPopupVisible.value;
 };
 
 const lockUpitnik = () => {
     upitnikInfoStore.finished = true;
-    isFinishPopupVisible.value =!isFinishPopupVisible.value;
+    isFinishPopupVisible.value = !isFinishPopupVisible.value;
 }
 
 watch(isPopupVisible, (newValue) => {
@@ -179,11 +181,12 @@ const handleButtonClick = async () => {
 </script>
 
 <style scoped>
-input{
+input {
     outline: none;
     border: none;
     width: 0;
 }
+
 header {
     display: flex;
     flex-direction: row;
@@ -192,7 +195,8 @@ header {
     width: 100%;
     height: 100%;
 }
-.hello-div{
+
+.hello-div {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -200,59 +204,72 @@ header {
     font-size: 25px;
     font-weight: 300;
 }
-.dec-div{
+
+.dec-div {
     height: 10px;
     width: 10px;
     margin-right: 20px;
     background-color: #0b79bd30;
 }
-.buttons{
+
+.buttons {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 30px;
     height: 100%;
 }
-.buttons > button {
+
+.buttons>button {
     font-size: 14px;
     padding: 0px 30px;
     height: 100%;
     border-radius: 5px;
 }
-.activeButton{
+
+.activeButton {
     font-weight: 600;
     color: white;
     background-color: var(--primary-color);
     cursor: pointer;
 }
-.pp-icon-close:hover{
+
+.pp-icon-close:hover {
     cursor: pointer;
     transform: scale(1.1);
 }
-.activeButton:hover{
+
+.activeButton:hover {
     background-color: var(--primary_hovered);
 }
-.activeButton:active{
+
+.activeButton:active {
     background-color: var(--primary_clicked);
 }
-.logout_btn{
+
+.logout_btn {
     color: var(--light-black);
     background-color: white;
     cursor: pointer;
 }
-.logout_btn:hover{
+
+.logout_btn:hover {
     background-color: rgba(111, 111, 111, 0.074);
 }
-.logout_btn:active{
+
+.logout_btn:active {
     background-color: rgba(111, 111, 111, 0.166);
 }
-.nav-icon{
+
+.nav-icon {
     margin-right: 10px;
 }
-.greeting_name{
+
+.greeting_name {
     font-weight: bold;
 }
-.pop-up{
+
+.pop-up {
     width: 100%;
     height: 100dvh;
     scroll-behavior: none;
@@ -267,19 +284,21 @@ header {
     align-items: center;
     justify-content: center;
 }
-.pop-up-container{
+
+.pop-up-container {
     padding: 20px;
     background-color: white;
     font-weight: 14px;
     width: 460px;
     border-radius: 5px;
-    
+
     display: flex;
     flex-direction: column;
     gap: 20px;
     text-align: center;
 }
-.pp-heading{
+
+.pp-heading {
     width: 100%;
     font-weight: 400;
     position: relative;
@@ -288,29 +307,35 @@ header {
     align-items: center;
     gap: 15px;
 }
-.pp-icon-close{
-    margin-left: auto; /* Gura ikonicu na desnu stranu */
+
+.pp-icon-close {
+    margin-left: auto;
+    /* Gura ikonicu na desnu stranu */
     position: absolute;
 
     right: 0px;
 }
-.pp-content{
+
+.pp-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
 }
-.secQuestion{
+
+.secQuestion {
     /* color: var(--primary-color); */
     font-weight: bold;
 }
-.select-icon{
+
+.select-icon {
     position: absolute;
     top: 50%;
     margin-left: auto;
 }
-#createBtn{
+
+#createBtn {
     width: 100%;
     font-size: 14px;
     font-weight: 600;
@@ -319,22 +344,33 @@ header {
     border-radius: 5px;
     background-color: var(--primary-color);
 }
-#createBtn:hover, .finishBtn:hover{
+
+#createBtn:hover,
+.finishBtn:hover {
     cursor: pointer;
     background-color: var(--primary_hovered);
 }
-#createBtn:active, .finishBtn:active{
+
+#createBtn:active,
+.finishBtn:active {
     background-color: var(--primary_clicked);
 }
-.v-select{
+
+.v-select {
     width: 100%;
 }
+
 .v-select-menu {
-    max-height: 200px; /* Adjust the max-height */
-    overflow-y: auto; /* Enable vertical scroll */
-    z-index: 9999; /* Ensure dropdown appears above other elements */
+    max-height: 200px;
+    /* Adjust the max-height */
+    overflow-y: auto;
+    /* Enable vertical scroll */
+    z-index: 9999;
+    /* Ensure dropdown appears above other elements */
 }
-.cancelBtn, .finishBtn{
+
+.cancelBtn,
+.finishBtn {
     width: 100%;
     font-size: 14px;
     font-weight: 600;
@@ -342,10 +378,12 @@ header {
     padding: 12px 0px;
     border-radius: 5px;
 }
-.finishBtn{
+
+.finishBtn {
     background-color: var(--primary-color);
 }
-.cancelBtn{
+
+.cancelBtn {
     width: auto;
     outline: none;
     background: none;
@@ -353,7 +391,8 @@ header {
     color: black;
     font-weight: 400;
 }
-.cancelBtn:hover{
+
+.cancelBtn:hover {
     text-decoration: underline;
     cursor: pointer;
 }
@@ -363,21 +402,27 @@ header {
     .hello-div {
         font-size: 20px;
     }
-    .buttons > button {
+
+    .buttons>button {
         padding: 0px 20px;
     }
+
     .pp-heading {
         font-size: 14px;
     }
+
     .pp-content h4 {
         font-size: 16px;
     }
+
     .pp-content select {
         font-size: 14px;
     }
+
     #createBtn {
         padding: 10px 0px;
     }
+
     .pop-up-container {
         width: 400px;
         padding: 15px;
@@ -388,25 +433,30 @@ header {
     .hello-div {
         font-size: 18px;
     }
-    .buttons > button {
+
+    .buttons>button {
         padding: 0px 15px;
     }
+
     .pp-heading {
         font-size: 12px;
     }
+
     .pp-content h4 {
         font-size: 14px;
     }
+
     .pp-content select {
         font-size: 12px;
     }
+
     #createBtn {
         padding: 8px 0px;
     }
+
     .pop-up-container {
         width: 360px;
         padding: 10px;
     }
 }
-
 </style>
