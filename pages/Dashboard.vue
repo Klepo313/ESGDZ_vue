@@ -3,17 +3,22 @@
         <AutoSavePopUp />
         <ScrollToTop />
         <div class="grid">
-            <nuxt-link to="/" tag="div" class="grid-element img-section">
+            <nuxt-link to="/" tag="div" class="grid-item img-section">
                 <img class="agram-logo" src=".././public/images/agram_lolo.png" alt="agram_logo">
             </nuxt-link>
             <div class="grid-item header">
                 <Navbar :tvkId="tvk_id" :korId="kor_id" :korKorime="kor_korime.toLowerCase()" />
             </div>
             <div class="grid-item sidebar" v-if="upitnik && upitnikData">
-                <Sidebar :evu_sif="evu_sif" :upitnik="upitnik" :upitnikData="upitnikData" @group-selected="handleGroupSelected"/>
+                <Sidebar :evu_sif="evu_sif" :upitnik="upitnik" :upitnikData="upitnikData"
+                    @group-selected="handleGroupSelected" />
             </div>
             <div class="grid-item content" v-if="upitnikData && evu_naziv && ezu_ess_id">
-                <Content :evu_naziv="evu_naziv" :ezu_ess_id="ezu_ess_id" :upitnikData="upitnikData" :selectedGroupId="parseInt(selectedGroupId)" />
+                <Content :evu_naziv="evu_naziv" :ezu_ess_id="ezu_ess_id" :upitnikData="upitnikData"
+                    :selectedGroupId="parseInt(selectedGroupId)" />
+            </div>
+            <div class="grid-item graphs last-element" v-if="1 === 1">
+                <Charts />
             </div>
             <div v-else>
                 Loading...
@@ -37,9 +42,9 @@ onBeforeMount(() => {
     const ekoParId = localStorage.getItem('eko_par_id_za');
     const ekoId = localStorage.getItem('eko_id');
     const ekoKorime = localStorage.getItem('eko_korime');
-    
+
     if (!ekoParId || !ekoId || !ekoKorime) {
-      return navigateTo('/login');
+        return navigateTo('/login');
     }
 })
 
@@ -48,8 +53,8 @@ const userInfoStore = useUserInfoStore();
 const isLoading = ref(true);
 
 const tvk_id = computed(() => {
-  const id = userInfoStore.ekoParId;
-  return isNaN(id) ? 0 : parseInt(id);
+    const id = userInfoStore.ekoParId;
+    return isNaN(id) ? 0 : parseInt(id);
 });
 
 const kor_id = computed(() => {
@@ -127,48 +132,68 @@ onMounted(async () => {
 * {
     overflow: hidden;
 }
+
 #back_arrow {
     position: fixed;
     top: 16px;
     left: 16px;
     opacity: 0.8;
 }
-#back_arrow .arrow-icon{
+
+#back_arrow .arrow-icon {
     color: inherit;
     text-decoration: none;
 }
+
 #back_arrow:hover {
     opacity: 1;
     cursor: pointer;
     left: 14px;
 }
+
 .grid {
     padding: 60px;
     width: 100%;
     height: auto;
     display: grid;
-    grid-template-columns: 330px auto;
+    grid-template-columns: 330px auto 250px;
+    /* Tri stupca */
     column-gap: 5vw;
     row-gap: 8dvh;
 }
+
 .agram-logo {
     width: 100%;
     max-height: auto;
     object-fit: cover;
 }
+
 .img-section {
     max-width: 270px;
     display: flex;
     align-items: center;
 }
+
 .header {
     display: flex;
     align-items: flex-end;
+    grid-area: 1 / 2 / span 1 / span 2;
 }
+
 .sidebar {
     height: min-content;
     position: -webkit-sticky;
     position: sticky;
     top: 0;
+    grid-column: 1;
+}
+
+.content {
+    grid-column: 2;
+}
+
+.graphs {
+    grid-column: 3;
+    border-radius: 10px;
 }
 </style>
