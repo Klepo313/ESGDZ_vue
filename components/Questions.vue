@@ -2,13 +2,13 @@
     <div>
         <span v-if="!questions || questions.length === 0" class="info_empty">
             <font-awesome-icon icon="circle-info" size="sm" />
-            Odaberi grupu za prikaz pitanja
+            Odaberi grupu za prikaz pitanja ili odaberi opciju na formi da pitanja budu prikazana
         </span>
 
         <ol v-else>
             <div class="question_div" v-for="question in questions" :key="question.ept_id">
                 <li>
-                    {{ question.ept_pitanje }} 
+                    {{ question.ept_pitanje }}
                     <span v-if="question.ept_jedmjer && question.ept_jedmjer !== 'null'">
                         [{{ question.ept_jedmjer }}]
                     </span>
@@ -16,35 +16,24 @@
                 <div class="input_div">
 
                     <!-- TEKSTUALNI unos -->
-                    <input 
-                        v-if="question.ept_vrstaodg == 'TEKST'" 
-                        type="text" 
-                        placeholder="Unesi tekst"
+                    <input v-if="question.ept_vrstaodg == 'TEKST'" type="text" placeholder="Unesi tekst"
                         :value="getAnswer(question.ept_id, 'eou_tekst')"
                         @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value)"
-                        :disabled="finishedUpitnik"
-                        >
+                        :disabled="finishedUpitnik">
 
                     <!-- NUMERIČKI unos -->
-                    <input 
-                        v-else-if="question.ept_vrstaodg == 'BROJ'" 
-                        type="number" 
-                        placeholder="Unesi broj"
+                    <input v-else-if="question.ept_vrstaodg == 'BROJ'" type="number" placeholder="Unesi broj"
                         :value="getAnswer(question.ept_id, 'eou_broj')"
                         @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value)"
-                        :disabled="finishedUpitnik"
-                        >
-                    
+                        :disabled="finishedUpitnik">
+
                     <!-- ODABERI OPCIJU unos -->
-                    <select v-else-if="question.ept_vrstaodg == 'IZBOR'" 
-                        name="select_option" 
-                        id="select_option" 
+                    <select v-else-if="question.ept_vrstaodg == 'IZBOR'" name="select_option" id="select_option"
                         :value="getAnswer(question.ept_id, 'eou_eso_id') || 'default'"
-                        @change="handleSelectChange(question.ept_id, $event.target.value)"
-                        :disabled="finishedUpitnik"
-                    >
-                        <option value="default" class="select_placeholder" selected disabled>-- Odaberi opciju --</option>
-                        <option v-for="answer in question.possibleAnswers" :key="answer.eso_id" :value="answer.eso_id" >
+                        @change="handleSelectChange(question.ept_id, $event.target.value)" :disabled="finishedUpitnik">
+                        <option value="default" class="select_placeholder" selected disabled>-- Odaberi opciju --
+                        </option>
+                        <option v-for="answer in question.possibleAnswers" :key="answer.eso_id" :value="answer.eso_id">
                             {{ answer.eso_odgovor }}
                         </option>
                     </select>
@@ -52,15 +41,9 @@
                     <!-- ODABERI VIŠESTRUKE OPCIJE unos -->
                     <form v-else-if="question.ept_vrstaodg == 'IZBORVIS'" action="">
                         <label class="checkbox_button" v-for="answer in question.possibleAnswers" :key="answer.eso_id">
-                            <input 
-                                class="checkbox_icon" 
-                                type="checkbox" 
-                                :id="answer.eso_id" 
-                                :name="answer.eso_odgovor"
+                            <input class="checkbox_icon" type="checkbox" :id="answer.eso_id" :name="answer.eso_odgovor"
                                 @change="handleCheckboxChange(question.ept_id, answer.eso_id, $event)"
-                                :checked="isChecked(question.ept_id, answer.eso_id)"
-                                :disabled="finishedUpitnik"
-                            >
+                                :checked="isChecked(question.ept_id, answer.eso_id)" :disabled="finishedUpitnik">
                             <label :for="answer.eso_id">{{ answer.eso_odgovor }}</label>
                         </label>
                     </form>
@@ -68,26 +51,20 @@
                     <!-- DA/NE unos -->
                     <form v-else-if="question.ept_vrstaodg == 'DN'" action="">
                         <div class="radio_button">
-                            <input type="radio" :id="question.ept_id" name="answer" 
-                                :value="'Da'" 
-                                :checked="getAnswer(question.ept_id, 'eou_tekst') === 'Da'" 
-                                @change="handleRadioChange(question.ept_id, 'Da')"
-                                :disabled="finishedUpitnik"
-                            >
+                            <input type="radio" :id="question.ept_id" name="answer" :value="'Da'"
+                                :checked="getAnswer(question.ept_id, 'eou_tekst') === 'Da'"
+                                @change="handleRadioChange(question.ept_id, 'Da')" :disabled="finishedUpitnik">
                             <label :for="question.ept_id">Da</label>
                         </div>
                         <div class="radio_button">
-                            <input type="radio" :id="question.ept_id+1" name="answer" 
-                                :value="'Ne'" 
-                                :checked="getAnswer(question.ept_id, 'eou_tekst') === 'Ne'" 
-                                @change="handleRadioChange(question.ept_id, 'Ne')"
-                                :disabled="finishedUpitnik"
-                            >
-                            <label :for="question.ept_id+1">Ne</label>
+                            <input type="radio" :id="question.ept_id + 1" name="answer" :value="'Ne'"
+                                :checked="getAnswer(question.ept_id, 'eou_tekst') === 'Ne'"
+                                @change="handleRadioChange(question.ept_id, 'Ne')" :disabled="finishedUpitnik">
+                            <label :for="question.ept_id + 1">Ne</label>
                         </div>
                     </form>
 
-                    <font-awesome-icon v-if="question.ept_opis" class="info_icon" icon="circle-info" 
+                    <font-awesome-icon v-if="question.ept_opis" class="info_icon" icon="circle-info"
                         @click="toggleInfo(question)" />
                 </div>
                 <div>
@@ -98,7 +75,8 @@
                                     <font-awesome-icon class="info_icon" icon="circle-info" />
                                     <h4>Opis</h4>
                                 </div>
-                                <font-awesome-icon @click="toggleInfo(question)" class="close_icon" icon="close" size="lg" />
+                                <font-awesome-icon @click="toggleInfo(question)" class="close_icon" icon="close"
+                                    size="lg" />
                             </div>
                             <p class="info_text">
                                 {{ question.ept_opis }}
@@ -141,7 +119,7 @@ const finishedUpitnik = computed(() => upitnikInfoStore.finished);
 
 const questions = ref([]);
 const answers = ref(null);
-const visibleInfo = ref(0); 
+const visibleInfo = ref(0);
 const selectedCheckboxes = ref({});
 
 // Funkcija za dobivanje ID-a grupe iz hasha URL-a
@@ -160,6 +138,7 @@ watch(() => router.currentRoute.value.hash, async (newHash, oldHash) => {
     } else {
         // Ako postoji ID grupe u hashu, postavi pitanja za tu grupu
         try {
+            console.log("Podaci: ", upitnikInfoStore.ezu_id, groupId);
             const data = await getQuestionsForGroup(upitnikInfoStore.ezu_id, groupId);
             questions.value = data;
         } catch (error) {
@@ -314,14 +293,15 @@ onMounted(async () => {
 
 
 <style scoped>
-
-.arrow-left{
+.arrow-left {
     transform: rotate(90deg);
 }
-.arrow-right{
+
+.arrow-right {
     transform: rotate(-90deg);
 }
-.bottom-div{
+
+.bottom-div {
     position: absolute;
     right: 0;
     bottom: 0;
@@ -331,44 +311,54 @@ onMounted(async () => {
 /* Definirajte animaciju za `Transition` */
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 100ms ease-in-out;
+    transition: all 100ms ease-in-out;
 }
 
 .fade-enter,
-.fade-leave-to /* .fade-leave-active prije Vue 3 */ {
-  opacity: 0; /* Početno stanje animacije */
+.fade-leave-to
+
+/* .fade-leave-active prije Vue 3 */
+    {
+    opacity: 0;
+    /* Početno stanje animacije */
 }
 
-.question_div{
+.question_div {
     margin-top: 20px;
-    max-width: 80%;
+    max-width: 100%;
     text-align: justify;
 }
+
 ol {
     list-style-type: decimal;
-    padding-left: 0;  
-    margin-left: 0;   
+    padding-left: 0;
+    margin-left: 0;
 }
+
 li {
     font-weight: 600;
     list-style-position: inside;
 }
-ol li::marker{
+
+ol li::marker {
     color: var(--primary-color);
     font-size: 16px;
     font-weight: bold;
 }
-input[type="radio"]{
+
+input[type="radio"] {
     width: auto;
 }
-.input_div{
+
+.input_div {
     margin-top: 10px;
 
     display: flex;
     align-items: center;
     gap: 18px;
 }
-.input_div > form {
+
+.input_div>form {
     width: auto;
 
     display: flex;
@@ -376,27 +366,34 @@ input[type="radio"]{
     gap: 5px;
     text-wrap: wrap;
 }
-.radio_button > label{
+
+.radio_button>label {
     margin-left: 6px;
 }
-.checkbox_button{
+
+.checkbox_button {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 6px;
 }
-.checkbox_icon{
+
+.checkbox_icon {
     width: auto;
 }
-.info_icon{
+
+.info_icon {
     opacity: 0.6;
 }
-.info_icon:hover, .close_icon:hover{
+
+.info_icon:hover,
+.close_icon:hover {
     opacity: 1;
     cursor: pointer;
     transform: scale(1.05);
 }
-.info_div{
+
+.info_div {
     z-index: 20;
     margin-top: 10px;
     max-width: 460px;
@@ -406,27 +403,34 @@ input[type="radio"]{
     border: 0.5px solid rgba(11, 121, 189, 0.500);
     /* border: 0.5px solid var(--primary-color); */
 }
-.info_header, .info_header_headings{
+
+.info_header,
+.info_header_headings {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-.info_header_headings{
+
+.info_header_headings {
     gap: 6px;
 }
-.info_header_headings > img {
+
+.info_header_headings>img {
     width: 16px;
 }
-h4{
+
+h4 {
     font-size: 14px;
     font-weight: 600;
 }
-.info_text{
+
+.info_text {
     margin-top: 10px;
     font-size: 14px;
     text-align: justify;
 }
-.close_icon{
+
+.close_icon {
     opacity: 0.6;
 }
 </style>
