@@ -163,10 +163,6 @@ const fetchQuestions = async () => {
         } catch (error) {
             console.error(error);
         }
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
     }
 };
 
@@ -285,6 +281,10 @@ watch(() => props.selectedGroupId, async () => {
     await fetchQuestions();
     await fetchAnswers();
     initializeSelectedCheckboxes();
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
 });
 
 onMounted(async () => {
