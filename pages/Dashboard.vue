@@ -18,7 +18,7 @@
                     :selectedGroupId="parseInt(selectedGroupId)" />
             </div>
             <div class="grid-item graphs last-element" v-if="1 === 1">
-                <Charts />
+                <Charts :selectedGroupId="parseInt(selectedGroupId)" :upitnikData="upitnikData" />
             </div>
             <div v-else>
                 Loading...

@@ -23,7 +23,7 @@ useHead({
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
-:root{
+:root {
   /* Colors */
   --primary-color: #0B78BD;
   --primary_hovered: #2693D9;
@@ -36,7 +36,7 @@ useHead({
   --green: #51A927;
   --yellow: #E6B300;
   --border_color: rgb(0, 0, 0, 0.5);
-  
+
   /* Icons */
   --arrow-short_icon: url('./public/icons/arrow-short.svg');
   --checkmark_icon: url('./public/icons/checkmark_icon.svg');
@@ -52,7 +52,8 @@ useHead({
   /* Font */
   --font-family: 'Open Sans', sans-serif;
 }
-*{
+
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -62,13 +63,15 @@ useHead({
   scroll-behavior: smooth;
   text-wrap: wrap;
 }
-::placeholder{
+
+::placeholder {
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 19px;
   color: var(--light-black);
 }
+
 /* .html-div{
   width: 100%;
   max-width: 1500px;
@@ -77,14 +80,15 @@ useHead({
   align-items: center;
   justify-content: center;
 } */
-h1{
+h1 {
   font-style: normal;
   font-weight: 700;
   font-size: 30px;
   line-height: 41px;
   color: var(--light-black);
 }
-h2{
+
+h2 {
   font-style: normal;
   font-weight: 700;
   font-size: 18px;
@@ -92,6 +96,7 @@ h2{
   padding-bottom: 10px;
   color: var(--light-black);
 }
+
 input {
   padding: 10px 18px;
   font-size: 14px;
@@ -102,7 +107,8 @@ input {
   width: 460px;
   max-width: 460px;
   outline: none;
-} 
+}
+
 select {
   padding: 10px 18px;
   font-size: 14px;
@@ -114,39 +120,44 @@ select {
   max-width: 460px;
   outline: none;
   background: none;
-} 
+}
 
-input:hover{
+input:hover {
   background-color: #E7F2F9;
 }
-input:focus{
+
+input:focus {
   background-color: #E7F2F9;
   border-color: var(--light-black);
 }
-button{
+
+button {
   outline: none;
   border: none;
   background-color: none;
 }
-.dashboard_text{
+
+.dashboard_text {
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
   line-height: 22px;
   color: #231f20;
 }
-.dashboard_text_active{
+
+.dashboard_text_active {
   font-weight: 600;
   font-size: 16px;
   line-height: 22px;
   color: white;
   background-color: var(--primary-color);
 }
-.dashboard_icon_active{
+
+.dashboard_icon_active {
   filter: invert(1);
 }
 
-.card_title{
+.card_title {
   font-weight: 700;
   font-size: 16px;
   line-height: 25px;
@@ -154,14 +165,16 @@ button{
   text-transform: capitalize;
   color: var(--light-black);
 }
-.card_properties{
+
+.card_properties {
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
   line-height: 19px;
-  color: var(--light-black);  
+  color: var(--light-black);
 }
-.card_status{
+
+.card_status {
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
@@ -169,14 +182,16 @@ button{
   text-transform: uppercase;
   color: var(--yellow);
 }
-.input_label{
+
+.input_label {
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 19px;
   color: #000000;
 }
-.button_text{
+
+.button_text {
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -188,13 +203,14 @@ button{
 .page-leave-active {
   transition: all 0.4s;
 }
+
 .page-enter-from,
 .page-leave-to {
   opacity: 0;
   filter: blur(1rem);
 }
 
-.info_empty{
+.info_empty {
   font-size: 14px;
   opacity: 0.7;
   font-weight: 400;
