@@ -186,6 +186,8 @@ const handleBlur = async (eou_id, value) => {
         await setValueForAnswer(parseInt(eou_id), value, userId);
         await fetchQuestions();
         await fetchAnswers();
+        await upitnikInfoStore.fetchAnsweredQuestionsForGroup(props.selectedGroupId);
+        await upitnikInfoStore.fetchTotalAnsweredQuestions();
     } catch (error) {
         console.error('Error saving answer:', error);
     }
@@ -198,6 +200,8 @@ const handleSelectChange = async (questionId, selectedValue) => {
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
             await fetchQuestions();
             await fetchAnswers();
+            await upitnikInfoStore.fetchAnsweredQuestionsForGroup(props.selectedGroupId);
+            await upitnikInfoStore.fetchTotalAnsweredQuestions();
         } catch (error) {
             console.error('Error saving answer:', error);
         }
@@ -213,6 +217,8 @@ const handleRadioChange = async (questionId, selectedValue) => {
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
             await fetchQuestions();
             await fetchAnswers();
+            await upitnikInfoStore.fetchAnsweredQuestionsForGroup(props.selectedGroupId);
+            await upitnikInfoStore.fetchTotalAnsweredQuestions();
         } catch (error) {
             console.error('Error saving answer:', error);
         }
@@ -250,7 +256,9 @@ const handleCheckboxChange = async (questionId, answerId, event) => {
         try {
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
             await fetchQuestions();
-            await fetchAnswers(); // osvežavanje odgovora
+            await fetchAnswers();
+            await upitnikInfoStore.fetchAnsweredQuestionsForGroup(props.selectedGroupId);
+            await upitnikInfoStore.fetchTotalAnsweredQuestions();
         } catch (error) {
             console.error('Error saving answer:', error);
         }

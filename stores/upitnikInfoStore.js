@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { getTotalAnsweredQuestions, getAnsweredQuestionsForGroup } from '~/services/services';
 
 export const useUpitnikInfoStore = defineStore('upitnik', {
     state: () => ({
@@ -10,9 +11,36 @@ export const useUpitnikInfoStore = defineStore('upitnik', {
         ezu_naziv: null,
         ezu_mijenjao: null,
         finished: false,
+        totalAnsweredQuestions: { uk_pitanja: 0, uk_odgovoreno: 0 },
+        groupAnsweredQuestions: { uk_pitanja: 0, uk_odgovoreno: 0 },
     }),
     actions: {
-        // this.eko_par_id_za = localStorage.getItem('eko_par_id_za');
+        async fetchTotalAnsweredQuestions() {
+            try {
+              const data = await getTotalAnsweredQuestions(this.ezu_id);
+              if (data.length > 0) {
+                this.totalAnsweredQuestions = {
+                  uk_pitanja: parseInt(data[0].uk_pitanja),
+                  uk_odgovoreno: parseInt(data[0].uk_odgovoreno),
+                };
+              }
+            } catch (error) {
+              console.error('Error fetching total answered questions:', error);
+            }
+        },
+        async fetchAnsweredQuestionsForGroup(groupId) {
+          try {
+            const data = await getAnsweredQuestionsForGroup(this.ezu_id, groupId);
+            if (data.length > 0) {
+                this.groupAnsweredQuestions = {
+                    uk_pitanja: parseInt(data[0].uk_pitanja),
+                    uk_odgovoreno: parseInt(data[0].uk_odgovoreno),
+                };
+            }
+          } catch (error) {
+            console.error('Error fetching answered questions for group:', error);
+          }
+        },
         initializeStore() {
             this.evu_sif = localStorage.getItem('evu_sif');
             this.ezu_ess_id = localStorage.getItem('ezu_ess_id');

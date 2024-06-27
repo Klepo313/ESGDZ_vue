@@ -89,3 +89,25 @@ export async function createNewUpitnik(p_kor_id, p_evu_sif){
         throw error;
     }
 }
+
+export async function getTotalAnsweredQuestions(p_ezu_id){
+    try {
+        const response = await axios.get(`${public_url}/totalAnswered/${p_ezu_id}`)
+        return response.data;
+    } 
+    catch (err){
+        console.error('Error getting total answered questions:', err);
+        throw err;
+    }
+}
+
+export async function getAnsweredQuestionsForGroup(p_ezu_id, p_ess_id){
+    try {
+        const response = await axios.get(`${public_url}/answeredPerGroup/${p_ezu_id}/${p_ess_id}`)
+        return response.data;
+    } 
+    catch (err){
+        console.error('Error getting total answered questions:', err);
+        throw err;
+    }
+}
