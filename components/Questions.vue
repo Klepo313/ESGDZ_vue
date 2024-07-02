@@ -8,9 +8,17 @@
         <ol v-else>
             <div class="question_div" v-for="question in questions" :key="question.ept_id">
                 <li>
-                    {{ question.ept_pitanje }}
+                    <span v-if="question.ept_obvezan == 'D'">
+                        *
+                    </span>
+                    <span>
+                        {{ question.ept_pitanje }}
+                    </span>
                     <span v-if="question.ept_jedmjer && question.ept_jedmjer !== 'null'">
                         [{{ question.ept_jedmjer }}]
+                    </span>
+                    <span v-if="question.ept_obvezan == 'D'" class="obavezno_text">
+                        (Obavezno)
                     </span>
                 </li>
                 <div class="input_div">
@@ -18,19 +26,32 @@
                     <!-- TEKSTUALNI unos -->
                     <input v-if="question.ept_vrstaodg == 'TEKST'" type="text" placeholder="Unesi tekst"
                         :value="getAnswer(question.ept_id, 'eou_tekst')"
-                        @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value)"
-                        :disabled="finishedUpitnik">
+                        @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value, $event.target)"
+                        :class="{ 'border-red': question.isInvalid }" :disabled="finishedUpitnik">
 
                     <!-- NUMERIČKI unos -->
                     <input v-else-if="question.ept_vrstaodg == 'BROJ'" type="number" placeholder="Unesi broj"
                         :value="getAnswer(question.ept_id, 'eou_broj')"
-                        @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value)"
-                        :disabled="finishedUpitnik">
+                        @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value, $event.target)"
+                        :class="{ 'border-red': question.isInvalid }" :disabled="finishedUpitnik">
+
+                    <!-- TEKSTUALNI unos -->
+                    <!-- <input v-if="question.ept_vrstaodg == 'TEKST'" type="text" placeholder="Unesi tekst"
+                        :value="computedAnswer(question.ept_id, 'eou_tekst')"
+                        @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), question.ept_id, $event.target.value)"
+                        :class="{ 'border-red': isInvalid(question.ept_id) }" :disabled="finishedUpitnik"> -->
+
+                    <!-- NUMERIČKI unos -->
+                    <!-- <input v-else-if="question.ept_vrstaodg == 'BROJ'" type="number" placeholder="Unesi broj"
+                        :value="computedAnswer(question.ept_id, 'eou_broj')"
+                        @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), question.ept_id, $event.target.value)"
+                        :class="{ 'border-red': isInvalid(question.ept_id) }" :disabled="finishedUpitnik"> -->
 
                     <!-- ODABERI OPCIJU unos -->
                     <select v-else-if="question.ept_vrstaodg == 'IZBOR'" name="select_option" id="select_option"
                         :value="getAnswer(question.ept_id, 'eou_eso_id') || 'default'"
-                        @change="handleSelectChange(question.ept_id, $event.target.value)" :disabled="finishedUpitnik">
+                        @change="handleSelectChange(question.ept_id, $event.target.value, $event.target)"
+                        :disabled="finishedUpitnik">
                         <option value="default" class="select_placeholder" selected disabled>-- Odaberi opciju --
                         </option>
                         <option v-for="answer in question.possibleAnswers" :key="answer.eso_id" :value="answer.eso_id">
@@ -42,7 +63,7 @@
                     <form v-else-if="question.ept_vrstaodg == 'IZBORVIS'" action="">
                         <label class="checkbox_button" v-for="answer in question.possibleAnswers" :key="answer.eso_id">
                             <input class="checkbox_icon" type="checkbox" :id="answer.eso_id" :name="answer.eso_odgovor"
-                                @change="handleCheckboxChange(question.ept_id, answer.eso_id, $event)"
+                                @change="handleCheckboxChange(question.ept_id, answer.eso_id, $event, $event.target)"
                                 :checked="isChecked(question.ept_id, answer.eso_id)" :disabled="finishedUpitnik">
                             <label :for="answer.eso_id">{{ answer.eso_odgovor }}</label>
                         </label>
@@ -53,13 +74,15 @@
                         <div class="radio_button">
                             <input type="radio" :id="question.ept_id" name="answer" :value="'Da'"
                                 :checked="getAnswer(question.ept_id, 'eou_tekst') === 'Da'"
-                                @change="handleRadioChange(question.ept_id, 'Da')" :disabled="finishedUpitnik">
+                                @change="handleRadioChange(question.ept_id, 'Da', $event.target)"
+                                :disabled="finishedUpitnik">
                             <label :for="question.ept_id">Da</label>
                         </div>
                         <div class="radio_button">
                             <input type="radio" :id="question.ept_id + 1" name="answer" :value="'Ne'"
                                 :checked="getAnswer(question.ept_id, 'eou_tekst') === 'Ne'"
-                                @change="handleRadioChange(question.ept_id, 'Ne')" :disabled="finishedUpitnik">
+                                @change="handleRadioChange(question.ept_id, 'Ne', $event.target)"
+                                :disabled="finishedUpitnik">
                             <label :for="question.ept_id + 1">Ne</label>
                         </div>
                     </form>
@@ -92,7 +115,7 @@
 <script setup>
 import { ref, onMounted, watch, computed, defineProps } from 'vue';
 import { useRouter } from 'vue-router';
-import { getQuestionsForGroup, getAnswersForUpitnik, setValueForAnswer } from '~/services/services';
+import { getQuestionsForGroup, getAnswersForUpitnik, setValueForAnswer, checkIfAnswerIsAnswered } from '~/services/services';
 import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
 import { useUserInfoStore } from '~/stores/userInfoStore';
 
@@ -119,6 +142,7 @@ const finishedUpitnik = computed(() => upitnikInfoStore.finished);
 
 const questions = ref([]);
 const answers = ref(null);
+const temporaryAnswers = ref({});
 const visibleInfo = ref(0);
 const selectedCheckboxes = ref({});
 
@@ -180,11 +204,20 @@ const getAnswer = (questionId, field) => {
     return answer ? answer[field] : '';
 };
 
-const handleBlur = async (eou_id, value) => {
+const handleBlur = async (eou_id, value, inputElement) => {
     const userId = parseInt(userInfoStore.eko_id);
     try {
         await setValueForAnswer(parseInt(eou_id), value, userId);
         await fetchQuestions();
+
+        let isAnswered = await checkIfAnswerIsAnswered(eou_id);
+        console.log(isAnswered)
+        if (isAnswered[0].u_redu == 0) {
+            inputElement.classList.add('border-red');
+        } else {
+            inputElement.classList.remove('border-red');
+        }
+
         await fetchAnswers();
         await upitnikInfoStore.fetchAnsweredQuestionsForGroup(props.selectedGroupId);
         await upitnikInfoStore.fetchTotalAnsweredQuestions();
@@ -193,12 +226,55 @@ const handleBlur = async (eou_id, value) => {
     }
 };
 
-const handleSelectChange = async (questionId, selectedValue) => {
+// const computedAnswer = (questionId, field) => {
+//     return temporaryAnswers.value[questionId] !== undefined
+//         ? temporaryAnswers.value[questionId].value
+//         : getAnswer(questionId, field);
+// };
+
+// const isInvalid = (questionId) => {
+//     return temporaryAnswers.value[questionId]?.isInvalid || false;
+// };
+
+// const handleBlur = async (eou_id, questionId, value) => {
+//     const userId = parseInt(userInfoStore.eko_id);
+//     try {
+//         temporaryAnswers.value[questionId] = { value, isInvalid: false };
+//         await setValueForAnswer(parseInt(eou_id), value, userId);
+
+//         let isAnswered = await checkIfAnswerIsAnswered(eou_id);
+//         console.log(isAnswered);
+
+//         if (isAnswered[0].u_redu == 0) {
+//             temporaryAnswers.value[questionId].isInvalid = true;
+//         } else {
+//             temporaryAnswers.value[questionId].isInvalid = false;
+//         }
+
+//         await fetchAnswers();
+//         answers.value = await fetchAnswers();
+//         await upitnikInfoStore.fetchAnsweredQuestionsForGroup(props.selectedGroupId);
+//         await upitnikInfoStore.fetchTotalAnsweredQuestions();
+//     } catch (error) {
+//         console.error('Error saving answer:', error);
+//     }
+// };
+
+const handleSelectChange = async (questionId, selectedValue, inputElement) => {
     const answer = answers.value.find(ans => ans.eou_ept_id === questionId);
     if (answer) {
         try {
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
             await fetchQuestions();
+
+            let isAnswered = await checkIfAnswerIsAnswered(parseInt(answer.eou_id));
+            console.log(isAnswered)
+            if (isAnswered[0].u_redu == 0) {
+                inputElement.classList.add('border-red');
+            } else {
+                inputElement.classList.remove('border-red');
+            }
+
             await fetchAnswers();
             await upitnikInfoStore.fetchAnsweredQuestionsForGroup(props.selectedGroupId);
             await upitnikInfoStore.fetchTotalAnsweredQuestions();
@@ -210,12 +286,21 @@ const handleSelectChange = async (questionId, selectedValue) => {
     }
 };
 
-const handleRadioChange = async (questionId, selectedValue) => {
+const handleRadioChange = async (questionId, selectedValue, inputElement) => {
     const answer = answers.value.find(ans => ans.eou_ept_id === questionId);
     if (answer) {
         try {
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
             await fetchQuestions();
+
+            let isAnswered = await checkIfAnswerIsAnswered(parseInt(answer.eou_id));
+            console.log(isAnswered)
+            if (isAnswered[0].u_redu == 0) {
+                inputElement.classList.add('border-red');
+            } else {
+                inputElement.classList.remove('border-red');
+            }
+
             await fetchAnswers();
             await upitnikInfoStore.fetchAnsweredQuestionsForGroup(props.selectedGroupId);
             await upitnikInfoStore.fetchTotalAnsweredQuestions();
@@ -227,7 +312,7 @@ const handleRadioChange = async (questionId, selectedValue) => {
     }
 };
 
-const handleCheckboxChange = async (questionId, answerId, event) => {
+const handleCheckboxChange = async (questionId, answerId, event, inputElement) => {
     const checkbox = document.getElementById(answerId);
     const isChecked = checkbox.checked;
 
@@ -256,6 +341,15 @@ const handleCheckboxChange = async (questionId, answerId, event) => {
         try {
             await setValueForAnswer(parseInt(answer.eou_id), selectedValue, parseInt(userInfoStore.eko_id));
             await fetchQuestions();
+
+            let isAnswered = await checkIfAnswerIsAnswered(parseInt(answer.eou_id));
+            console.log(isAnswered)
+            if (isAnswered[0].u_redu == 0) {
+                inputElement.classList.add('border-red');
+            } else {
+                inputElement.classList.remove('border-red');
+            }
+
             await fetchAnswers();
             await upitnikInfoStore.fetchAnsweredQuestionsForGroup(props.selectedGroupId);
             await upitnikInfoStore.fetchTotalAnsweredQuestions();
@@ -364,7 +458,7 @@ input[type="radio"] {
 
 .input_div {
     margin-top: 10px;
-
+    position: relative;
     display: flex;
     align-items: center;
     gap: 18px;
@@ -392,6 +486,10 @@ input[type="radio"] {
 
 .checkbox_icon {
     width: auto;
+}
+
+.obavezno_text {
+    color: red;
 }
 
 .info_icon {
@@ -444,5 +542,9 @@ h4 {
 
 .close_icon {
     opacity: 0.6;
+}
+
+.border-red {
+    border: 2px solid red;
 }
 </style>

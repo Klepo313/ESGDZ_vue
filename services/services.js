@@ -111,3 +111,38 @@ export async function getAnsweredQuestionsForGroup(p_ezu_id, p_ess_id){
         throw err;
     }
 }
+
+export async function getStatusUpitnika(p_ezu_id){
+    try {
+        const response = await axios.get(`${public_url}/status/${p_ezu_id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error getting status upitnika:', error);
+        throw error;
+    }
+}
+
+export async function lockUpitnik(p_ezu_id){
+    try {
+        const response = await axios.get(`${public_url}/lock-upitnik/${p_ezu_id}`);
+        // const response = await axios.get(`${public_url}/lock-upitnik`, {
+        //     params: {
+        //         p_ezu_id
+        //     }
+        // });
+        return response.data;
+    } catch (error) {
+        console.error('Error locking upitnik:', error);
+        throw error;
+    }
+}
+
+export async function checkIfAnswerIsAnswered(p_eou_id){
+    try {
+        const response = await axios.get(`${public_url}/check-answer/${p_eou_id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error checking if answer is already answered:', error);
+        throw error;
+    }
+}

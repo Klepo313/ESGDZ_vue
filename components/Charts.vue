@@ -134,11 +134,11 @@ const fetchTotalAnsweredQuestions = async () => {
             loadedTotal.value = true;
 
             // Ažuriraj grafikon
-            //totalChartRef.value.chartInstance.update();
-            if (totalChartRef.value) {
-                console.log("Updating total chart...");
-                totalChartRef.value.update();
-            }
+            // //totalChartRef.value.chartInstance.update();
+            // if (totalChartRef.value) {
+            //     console.log("Updating total chart...");
+            //     totalChartRef.value.update();
+            // }
         }
     } catch (error) {
         console.error("Error fetching total answered questions:", error);
@@ -187,11 +187,11 @@ const fetchAnsweredQuestionsForGroup = async () => {
                 loadedGroup.value = true;
 
                 // Ažuriraj grafikon
-                // groupChartRef.value.chartInstance.update();
-                if (groupChartRef.value) {
-                    console.log("Updating group chart...");
-                    groupChartRef.value.update();
-                }
+                // // groupChartRef.value.chartInstance.update();
+                // if (groupChartRef.value) {
+                //     console.log("Updating group chart...");
+                //     groupChartRef.value.update();
+                // }
             }
         } catch (error) {
             console.error("Error fetching answered questions for group:", error);

@@ -3,8 +3,13 @@
         <AutoSavePopUp />
         <ScrollToTop />
         <div class="grid">
-            <nuxt-link to="/" tag="div" class="grid-item img-section">
+            <nuxt-link tag="div" class="grid-item img-section">
                 <img class="agram-logo" src=".././public/images/agram_lolo.png" alt="agram_logo">
+                <span v-if="status"
+                    :class="{ 'status-yellow': status[0].ezu_status == 0, 'status-green': status[0].ezu_status == 1 }"
+                    class="status">
+                    {{ status[0].status_txt }}
+                </span>
             </nuxt-link>
             <div class="grid-item header">
                 <Navbar :tvkId="tvk_id" :korId="kor_id" :korKorime="kor_korime.toLowerCase()" />
@@ -36,7 +41,7 @@
 import { onMounted, ref, computed, watch } from 'vue';
 import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
 import { useUserInfoStore } from '~/stores/userInfoStore';
-import { getUpitnikData, getAnswersForUpitnik } from '~/services/services';
+import { getUpitnikData, getAnswersForUpitnik, getStatusUpitnika } from '~/services/services';
 
 onBeforeMount(() => {
     const ekoParId = localStorage.getItem('eko_par_id_za');
@@ -92,6 +97,7 @@ const ezu_id = computed(() => {
 const upitnik = ref(null);
 const upitnikData = ref(null);
 const answers = ref(null);
+const status = ref(null);
 const selectedGroupId = ref(null);
 
 const loadData = async () => {
@@ -99,7 +105,9 @@ const loadData = async () => {
     try {
         upitnik.value = await getUpitnikData(evu_sif.value);
         answers.value = await getAnswersForUpitnik(ezu_id.value);
+        status.value = await getStatusUpitnika(ezu_id.value);
         console.log(answers.value);
+        console.log(status.value);
         if (upitnik.value && upitnik.value.length > 0) {
             upitnikData.value = upitnik.value[0].children;
             //upitnikInfoStore.setEzuNaziv(upitnik.value[0].name)
@@ -171,8 +179,27 @@ onMounted(async () => {
 .img-section {
     max-width: 270px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
 }
+
+.status {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-yellow {
+    color: var(--yellow);
+}
+
+.status-green {
+    color: var(--green);
+}
+
 
 .header {
     display: flex;
