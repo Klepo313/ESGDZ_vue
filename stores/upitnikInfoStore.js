@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { getTotalAnsweredQuestions, getAnsweredQuestionsForGroup } from '~/services/services';
+import Cookies from 'js-cookie';
 
 export const useUpitnikInfoStore = defineStore('upitnik', {
     state: () => ({
@@ -42,61 +43,61 @@ export const useUpitnikInfoStore = defineStore('upitnik', {
           }
         },
         initializeStore() {
-            this.evu_sif = localStorage.getItem('evu_sif');
-            this.ezu_ess_id = localStorage.getItem('ezu_ess_id');
-            this.ezu_id = localStorage.getItem('evu_id');
-            this.ezu_ezp_id = localStorage.getItem('ezu_ezp_id');
-            this.ess_id = localStorage.getItem('ess_id');
-            this.ezu_naziv = localStorage.getItem('ezu_naziv');
-            this.ezu_mijenjao = localStorage.getItem('ezu_mijenjao');
-            this.finished = localStorage.getItem('finished');
+            this.evu_sif = Cookies.get('evu_sif');
+            this.ezu_ess_id = Cookies.get('ezu_ess_id');
+            this.ezu_id = Cookies.get('evu_id');
+            this.ezu_ezp_id = Cookies.get('ezu_ezp_id');
+            this.ess_id = Cookies.get('ess_id');
+            this.ezu_naziv = Cookies.get('ezu_naziv');
+            this.ezu_mijenjao = Cookies.get('ezu_mijenjao');
+            this.finished = Cookies.get('finished');
         },
         setEvuSif(evu_sif) {
             this.evu_sif = evu_sif;
             if (process.client) {
-                localStorage.setItem('evu_sif', evu_sif);
+                Cookies.set('evu_sif', evu_sif, { expires: 7 }); // Expires in 7 days
             }
         },
         setEzuId(ezu_id) {
             this.ezu_id = ezu_id;
             if (process.client) {
-                localStorage.setItem('evu_id', ezu_id);
+                Cookies.set('evu_id', ezu_id, { expires: 7 });
             }
         },
         setEzuEssId(ezu_ess_id) {
             this.ezu_ess_id = ezu_ess_id;
             if (process.client) {
-                localStorage.setItem('ezu_ess_id', ezu_ess_id);
+                Cookies.set('ezu_ess_id', ezu_ess_id, { expires: 7 });
             }
         },
         setEzuEzpId(ezu_ezp_id) {
             this.ezu_ezp_id = ezu_ezp_id;
             if (process.client) {
-                localStorage.setItem('ezu_ezp_id', ezu_ezp_id);
+                Cookies.set('ezu_ezp_id', ezu_ezp_id, { expires: 7 });
             }
         },
         setEssId(ess_id){
             this.ess_id = ess_id;
             if (process.client) {
-                localStorage.setItem('ess_id', ess_id);
+                Cookies.set('ess_id', ess_id, { expires: 7 });
             }
         },
         setEzuNaziv(ezu_naziv) {
             this.ezu_naziv = ezu_naziv;
             if (process.client) {
-                localStorage.setItem('ezu_naziv', ezu_naziv);
+                Cookies.set('ezu_naziv', ezu_naziv, { expires: 7 });
             }
         },
         setEzuMijenjao(ezu_mijenjao) {
             this.ezu_mijenjao = ezu_mijenjao;
             if (process.client) {
-                localStorage.setItem('ezu_mijenjao', ezu_mijenjao);
+                Cookies.set('ezu_mijenjao', ezu_mijenjao, { expires: 7 });
             }
         },
         setFinished(finished) {
             this.finished = finished;
             if (process.client) {
-                localStorage.setItem('finished', finished);
+                Cookies.set('finished', finished, { expires: 7 });
             }
         },
         clearUpitnikInfo(){
@@ -108,13 +109,13 @@ export const useUpitnikInfoStore = defineStore('upitnik', {
             this.ezu_naziv = null;
             this.ezu_mijenjao = null;
             if (process.client) {
-                localStorage.removeItem('evu_sif');
-                localStorage.removeItem('ezu_ess_id');
-                localStorage.removeItem('evu_id');
-                localStorage.removeItem('ezu_ezp_id');
-                localStorage.removeItem('ess_id');
-                localStorage.removeItem('ezu_naziv');
-                localStorage.removeItem('ezu_mijenjao');
+                Cookies.remove('evu_sif');
+                Cookies.remove('ezu_ess_id');
+                Cookies.remove('evu_id');
+                Cookies.remove('ezu_ezp_id');
+                Cookies.remove('ess_id');
+                Cookies.remove('ezu_naziv');
+                Cookies.remove('ezu_mijenjao');
             }
         }
     },
