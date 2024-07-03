@@ -42,11 +42,16 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
 import { useUserInfoStore } from '~/stores/userInfoStore';
 import { getUpitnikData, getAnswersForUpitnik, getStatusUpitnika } from '~/services/services';
+import Cookies from 'js-cookie';
 
 onBeforeMount(() => {
-    const ekoParId = localStorage.getItem('eko_par_id_za');
-    const ekoId = localStorage.getItem('eko_id');
-    const ekoKorime = localStorage.getItem('eko_korime');
+    // const ekoParId = localStorage.getItem('eko_par_id_za');
+    // const ekoId = localStorage.getItem('eko_id');
+    // const ekoKorime = localStorage.getItem('eko_korime');
+
+    const ekoParId = Cookies.get('eko_par_id_za');
+    const ekoId = Cookies.get('eko_id');
+    const ekoKorime = Cookies.get('eko_korime');
 
     if (!ekoParId || !ekoId || !ekoKorime) {
         return navigateTo('/login');

@@ -17,24 +17,25 @@
                         Nema aktivnih upitnika
                     </span>
                     <TransitionGroup v-else name="list" tag="div" class="upitnici">
-                        <div v-for="upitnik in upitnici" 
-                            :key="upitnik.ezu_id" 
-                            :data-key="upitnik.ezu_id" 
-                            class="upitnik" 
-                            @click="routerToDashboard"
-                        >
+                        <div v-for="upitnik in upitnici" :key="upitnik.ezu_id" :data-key="upitnik.ezu_id"
+                            class="upitnik" @click="routerToDashboard">
                             <div class="upt-header">
                                 <font-awesome-icon icon="file-pen" class="first-element" size="lg" />
                                 <span class="second-element">
-                                    <nuxt-link to="/" @click="setUpitnikData(upitnik);" style="text-decoration: none; color: inherit;">
+                                    <nuxt-link to="/" @click="setUpitnikData(upitnik);"
+                                        style="text-decoration: none; color: inherit;">
                                         {{ upitnik.evu_naziv }} ({{ formatDate(upitnik.ezu_kreirano) }})
                                     </nuxt-link>
                                 </span>
-                                <font-awesome-icon @click="toggleInfo(upitnik)" :icon="visibleInfo === parseInt(upitnik.ezu_id) ? 'chevron-up' : 'chevron-down'" class="icon" size="lg" />
+                                <font-awesome-icon @click="toggleInfo(upitnik)"
+                                    :icon="visibleInfo === parseInt(upitnik.ezu_id) ? 'chevron-up' : 'chevron-down'"
+                                    class="icon" size="lg" />
                             </div>
-                            <div v-show="visibleInfo === parseInt(upitnik.ezu_id)" :class="['upt-info', { 'active': visibleInfo === parseInt(upitnik.ess_id) }]">
+                            <div v-show="visibleInfo === parseInt(upitnik.ezu_id)"
+                                :class="['upt-info', { 'active': visibleInfo === parseInt(upitnik.ess_id) }]">
                                 <font-awesome-icon icon="chart-simple" />
-                                <span class="grid-item" style="color: green; text-transform: uppercase; font-weight: 600;">Aktivno</span>
+                                <span class="grid-item"
+                                    style="color: green; text-transform: uppercase; font-weight: 600;">Aktivno</span>
                                 <font-awesome-icon icon="calendar-plus" />
                                 <span class="grid-item">{{ formatDate(upitnik.ezu_kreirano) }}</span>
                                 <!-- <font-awesome-icon icon="calendar-check" />
@@ -66,14 +67,15 @@ import { useUserInfoStore } from '~/stores/userInfoStore.js';
 import { computed, ref, onBeforeMount, TransitionGroup } from 'vue';
 import { getUpitnici } from '~/services/services';
 import { useRouter } from 'vue-router';
+import Cookies from 'js-cookie';
 
 onBeforeMount(() => {
-    const ekoParId = localStorage.getItem('eko_par_id_za');
-    const ekoId = localStorage.getItem('eko_id');
-    const ekoKorime = localStorage.getItem('eko_korime');
-    
+    const ekoParId = Cookies.get('eko_par_id_za');
+    const ekoId = Cookies.get('eko_id');
+    const ekoKorime = Cookies.get('eko_korime');
+
     if (!ekoParId || !ekoId || !ekoKorime) {
-      return navigateTo('/login');
+        return navigateTo('/login');
     }
 })
 
@@ -88,8 +90,8 @@ const upitnikInfoStore = useUpitnikInfoStore();
 const router = useRouter();
 
 const tvk_id = computed(() => {
-  const id = userInfoStore.ekoParId;
-  return isNaN(id) ? 0 : parseInt(id);
+    const id = userInfoStore.ekoParId;
+    return isNaN(id) ? 0 : parseInt(id);
 });
 const kor_id = computed(() => {
     const id = userInfoStore.ekoId;
@@ -180,16 +182,20 @@ onMounted(async () => {
     column-gap: 5vw;
     row-gap: 8dvh;
 }
+
 .logo-div {
     display: flex;
     align-items: center;
 }
+
 .logo {
     width: 100%;
 }
+
 h2 {
     margin-top: 0px;
 }
+
 .content {
     grid-column: 1 / 3;
 
@@ -197,11 +203,13 @@ h2 {
     flex-direction: column;
     gap: 30px;
 }
+
 .content-div {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
+
 .upitnici {
     width: 100%;
     display: flex;
@@ -209,6 +217,7 @@ h2 {
     flex-wrap: wrap;
     gap: 15px;
 }
+
 .upitnik {
     height: 62px;
     width: 100%;
@@ -225,6 +234,7 @@ h2 {
 
     transition: height 0.3s ease;
 }
+
 .upt-header:hover .first-element,
 .upt-header:hover .second-element {
     color: var(--primary-color);
@@ -249,9 +259,10 @@ h2 {
     padding-right: 18px;
 }
 
-.upt-header > span {
+.upt-header>span {
     margin-left: 10px;
 }
+
 .upt-info {
     width: auto;
     display: grid;
@@ -262,9 +273,11 @@ h2 {
     row-gap: 10px;
     overflow: hidden;
 }
+
 .upt-info.active {
     height: auto;
 }
+
 .icon {
     margin-left: auto;
     position: absolute;
@@ -272,22 +285,25 @@ h2 {
     padding: 5px;
     border-radius: 50%;
 }
+
 .icon:hover {
     margin-top: 3px;
     cursor: pointer;
     background-color: #0b79bd45;
 }
+
 .icon:hover .upitnik {
     background-color: #0b79bd30;
 }
 
-.list-enter-active, .list-leave-active {
+.list-enter-active,
+.list-leave-active {
     transition: transform 0.5s, opacity 0.5s;
 }
 
-.list-enter-from, .list-leave-to {
+.list-enter-from,
+.list-leave-to {
     transform: translateX(-100%);
     opacity: 0;
 }
-
 </style>

@@ -230,6 +230,7 @@ const handleHashChange = () => {
 onMounted(() => {
     handleHashChange(); // Pozivamo funkciju prilikom montiranja komponente da bismo odmah reagirali na trenutni hash
     window.addEventListener('hashchange', handleHashChange); // Dodajemo event listener za promjenu hash-a
+    updateAnsweredGroups(); // Pokrenite ažuriranje odgovora
 });
 
 onBeforeUnmount(() => {
