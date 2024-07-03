@@ -1,8 +1,8 @@
-
 <template>
     <div>
         <div class="sidebar">
-            <span v-if="upitnik && upitnik[0]" class="sidebar-main router_span" @click="toggleExpanded_main"> <!--@click="toggleExpanded_main"-->
+            <span v-if="upitnik && upitnik[0]" class="sidebar-main router_span" @click="toggleExpanded_main">
+                <!--@click="toggleExpanded_main"-->
                 <font-awesome-icon icon="layer-group" size="lg" />
                 <span class="sidebar-main-text">{{ upitnikInfoStore.getEzuNaziv }}</span>
                 <!-- <font-awesome-icon :icon="expanded ? 'chevron-down' : 'chevron-right'" class="arrow"  /> -->
@@ -12,36 +12,52 @@
                     <span class="sidebar-sub router_span" @click="toggleExpanded(group.id); displayQuestions(group);">
                         <font-awesome-icon icon="bars-staggered" size="lg" />
                         <span class="sidebar-text">{{ group.name }}</span>
-                        <font-awesome-icon v-if="group.children && group.children.length > 0" class="arrow arrow-sub" :icon="isExpanded(group.id) ? 'chevron-down' : 'chevron-right'"  />
+                        <font-awesome-icon v-if="group.children && group.children.length > 0" class="arrow arrow-sub"
+                            :icon="isExpanded(group.id) ? 'chevron-down' : 'chevron-right'" />
+                        <font-awesome-icon v-else class="arrow2" icon="circle-check"
+                            v-if="answeredGroups[group.id] !== undefined && answeredGroups[group.id]" />
                     </span>
-                    <ul class="sidebar-sub-list" v-if="isExpanded(group.id) && group.children && group.children.length > 0" >
+                    <ul class="sidebar-sub-list"
+                        v-if="isExpanded(group.id) && group.children && group.children.length > 0">
                         <li class="sidebar-item" v-for="category in group.children" :key="category.id">
-                            <span class="sidebar-sub router_span" @click="toggleSubExpanded(category.id); displayQuestions(category);">
+                            <span class="sidebar-sub router_span"
+                                @click="toggleSubExpanded(category.id); displayQuestions(category);">
                                 <font-awesome-icon icon="list" size="lg" />
                                 <span class="sidebar-text">{{ category.name }}</span>
-                                <font-awesome-icon v-if="category.children && category.children.length > 0" class="arrow arrow-sub" :icon="isSubExpanded(category.id) ? 'chevron-down' : 'chevron-right'"  />
+                                <font-awesome-icon v-if="category.children && category.children.length > 0"
+                                    class="arrow arrow-sub"
+                                    :icon="isSubExpanded(category.id) ? 'chevron-down' : 'chevron-right'" />
+                                <font-awesome-icon v-else class="arrow2" icon="circle-check"
+                                    v-if="answeredGroups[category.id] !== undefined && answeredGroups[category.id]" />
+
                             </span>
-                            <ul class="sidebar-sub-list" v-if="isSubExpanded(category.id) && category.children && category.children.length > 0">
-                                <li class="sidebar-item" v-for="subcategory in category.children" :key="subcategory.id" @click="displayQuestions(subcategory)">
+                            <ul class="sidebar-sub-list"
+                                v-if="isSubExpanded(category.id) && category.children && category.children.length > 0">
+                                <li class="sidebar-item" v-for="subcategory in category.children" :key="subcategory.id"
+                                    @click="displayQuestions(subcategory)">
                                     <span class="sidebar-sub">
                                         <font-awesome-icon icon="list-check" />
                                         <span class="sidebar-text">{{ subcategory.name }}</span>
+                                        <font-awesome-icon
+                                            v-if="!subcategory.children && answeredGroups[subcategory.id]"
+                                            class="arrow2" icon="circle-check" />
                                     </span>
                                 </li>
                             </ul>
                         </li>
                     </ul>
                 </li>
-                
+
             </ul>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, defineProps, onBeforeMount, onMounted, defineEmits  } from 'vue'
+import { ref, defineProps, onBeforeMount, onMounted, defineEmits } from 'vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbStore';
 import { useUpitnikInfoStore } from '#imports';
+import { getAnsweredQuestionsForGroup } from '~/services/services';
 
 const breadcrumbStore = useBreadcrumbStore();
 const upitnikInfoStore = useUpitnikInfoStore();
@@ -49,10 +65,52 @@ const upitnikInfoStore = useUpitnikInfoStore();
 const props = defineProps({
     evu_sif: String,
     upitnik: Object,
-    upitnikData: Object,
+    upitnikData: {
+        type: Array,
+        default: () => []
+    }
 });
 
-console.log(props.upitnik)
+const p_ezu_id = computed(() => {
+    const id = upitnikInfoStore.ezu_id;
+    return isNaN(id) ? 0 : parseInt(id);
+});
+
+const answeredGroups = ref({});
+
+// Nadogradnja upitnikData objekta
+const checkIfGroupIsAnswered = async (p_ezu_id, p_ess_id) => {
+    const response = await getAnsweredQuestionsForGroup(p_ezu_id, parseInt(p_ess_id));
+    const odgovoreno = response[0].uk_odgovoreno;
+    const ukupno = response[0].uk_pitanja;
+
+    return odgovoreno === ukupno;
+};
+
+const updateAnsweredGroups = async () => {
+    const newAnsweredGroups = {};
+    for (const group of props.upitnikData) {
+        const isAnswered = await checkIfGroupIsAnswered(p_ezu_id.value, group.id);
+        newAnsweredGroups[group.id] = isAnswered;
+        for (const category of group.children) {
+            const isAnswered = await checkIfGroupIsAnswered(p_ezu_id.value, category.id);
+            newAnsweredGroups[category.id] = isAnswered;
+            for (const subcategory of category.children) {
+                const isAnswered = await checkIfGroupIsAnswered(p_ezu_id.value, subcategory.id);
+                newAnsweredGroups[subcategory.id] = isAnswered;
+            }
+        }
+    }
+    answeredGroups.value = newAnsweredGroups;
+};
+
+watchEffect(() => {
+    if (p_ezu_id.value && props.upitnikData.length > 0) {
+        updateAnsweredGroups();
+    }
+});
+
+console.log(props.upitnikData)
 
 const emit = defineEmits(['group-selected']);
 
@@ -136,6 +194,8 @@ const displayQuestions = (group) => {
         emit('group-selected', group.id);
         navigateTo(`/#${group.id}`);
     }
+
+
 }
 
 
@@ -153,28 +213,6 @@ const findGroupById = (groups, id) => {
     }
     return null; // Ako nije pronađen odgovarajući ID
 };
-
-// // Metoda koja se poziva pri učitavanju komponente
-// onMounted(() => {
-//     const groupIdFromHash = parseInt(window.location.hash.substring(1)); // Dobiti ID iz URL-a
-
-//     if (!isNaN(groupIdFromHash)) {
-//         // Pronaći odgovarajuću grupu u upitnikData na temelju groupIdFromHash
-//         const selectedGroup = props.upitnikData ? findGroupById(props.upitnikData, groupIdFromHash) : null;
-
-//         console.log(selectedGroup);
-
-//         if (selectedGroup) {
-//             // Postaviti odabranu grupu
-//             props.selectedGroupId = selectedGroup.id;
-
-//             // Opcionalno: Prikazati pitanja za odabranu grupu
-//             displayQuestions(selectedGroup);
-//         } else {
-//             console.error(`Group with ID ${groupIdFromHash} not found.`);
-//         }
-//     }
-// });
 
 const handleHashChange = () => {
     const groupIdFromHash = parseInt(window.location.hash.substring(1));
@@ -199,11 +237,12 @@ onBeforeUnmount(() => {
 });
 
 </script>
-  
+
 <style scoped>
-*{
+* {
     transition: 0.3s ease-in-out;
 }
+
 /* Stil za osnovne stavke */
 .sidebar-main {
     display: flex;
@@ -247,7 +286,7 @@ onBeforeUnmount(() => {
     cursor: pointer;
 }
 
-.sidebar-item + .sidebar-item {
+.sidebar-item+.sidebar-item {
     margin-top: 2px;
 }
 
@@ -256,7 +295,7 @@ onBeforeUnmount(() => {
     border-radius: 5px;
 }
 
-.sidebar-sub:hover .arrow-sub{
+.sidebar-sub:hover .arrow-sub {
     opacity: 1;
 }
 
@@ -268,13 +307,18 @@ onBeforeUnmount(() => {
 }
 
 /* Stil za strelice */
-.arrow {
+.arrow,
+.arrow2 {
     position: absolute;
     right: 18px;
+}
+
+.arrow2 {
+    color: green;
+    opacity: 0.85;
 }
 
 .arrow-sub {
     opacity: 0.3;
 }
 </style>
-  
