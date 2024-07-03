@@ -20,6 +20,7 @@
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "chart.js": "^4.4.3",
+    "js-cookie": "^3.0.5",
     "nuxt": "^3.11.2",
     "nuxt-storage": "^1.2.2",
     "p-limit": "^5.0.0",
