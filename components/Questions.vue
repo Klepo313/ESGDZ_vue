@@ -27,31 +27,31 @@
                     <input v-if="question.ept_vrstaodg == 'TEKST'" type="text" placeholder="Unesi tekst"
                         :value="getAnswer(question.ept_id, 'eou_tekst')"
                         @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value, $event.target)"
-                        :class="{ 'border-red': question.isInvalid }" :disabled="finishedUpitnik">
+                        :class="{ 'border-red': question.isInvalid }" :disabled="status === 1">
 
                     <!-- NUMERIČKI unos -->
                     <input v-else-if="question.ept_vrstaodg == 'BROJ'" type="number" placeholder="Unesi broj"
                         :value="getAnswer(question.ept_id, 'eou_broj')"
                         @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value, $event.target)"
-                        :class="{ 'border-red': question.isInvalid }" :disabled="finishedUpitnik">
+                        :class="{ 'border-red': question.isInvalid }" :disabled="status === 1">
 
                     <!-- TEKSTUALNI unos -->
                     <!-- <input v-if="question.ept_vrstaodg == 'TEKST'" type="text" placeholder="Unesi tekst"
                         :value="computedAnswer(question.ept_id, 'eou_tekst')"
                         @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), question.ept_id, $event.target.value)"
-                        :class="{ 'border-red': isInvalid(question.ept_id) }" :disabled="finishedUpitnik"> -->
+                        :class="{ 'border-red': isInvalid(question.ept_id) }" :disabled="status.value === 1"> -->
 
                     <!-- NUMERIČKI unos -->
                     <!-- <input v-else-if="question.ept_vrstaodg == 'BROJ'" type="number" placeholder="Unesi broj"
                         :value="computedAnswer(question.ept_id, 'eou_broj')"
                         @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), question.ept_id, $event.target.value)"
-                        :class="{ 'border-red': isInvalid(question.ept_id) }" :disabled="finishedUpitnik"> -->
+                        :class="{ 'border-red': isInvalid(question.ept_id) }" :disabled="status.value === 1"> -->
 
                     <!-- ODABERI OPCIJU unos -->
                     <select v-else-if="question.ept_vrstaodg == 'IZBOR'" name="select_option" id="select_option"
                         :value="getAnswer(question.ept_id, 'eou_eso_id') || 'default'"
                         @change="handleSelectChange(question.ept_id, $event.target.value, $event.target)"
-                        :disabled="finishedUpitnik">
+                        :disabled="status === 1">
                         <option value="default" class="select_placeholder" selected disabled>-- Odaberi opciju --
                         </option>
                         <option v-for="answer in question.possibleAnswers" :key="answer.eso_id" :value="answer.eso_id">
@@ -64,7 +64,7 @@
                         <label class="checkbox_button" v-for="answer in question.possibleAnswers" :key="answer.eso_id">
                             <input class="checkbox_icon" type="checkbox" :id="answer.eso_id" :name="answer.eso_odgovor"
                                 @change="handleCheckboxChange(question.ept_id, answer.eso_id, $event, $event.target)"
-                                :checked="isChecked(question.ept_id, answer.eso_id)" :disabled="finishedUpitnik">
+                                :checked="isChecked(question.ept_id, answer.eso_id)" :disabled="status === 1">
                             <label :for="answer.eso_id">{{ answer.eso_odgovor }}</label>
                         </label>
                     </form>
@@ -75,14 +75,14 @@
                             <input type="radio" :id="question.ept_id" name="answer" :value="'Da'"
                                 :checked="getAnswer(question.ept_id, 'eou_tekst') === 'Da'"
                                 @change="handleRadioChange(question.ept_id, 'Da', $event.target)"
-                                :disabled="finishedUpitnik">
+                                :disabled="status === 1">
                             <label :for="question.ept_id">Da</label>
                         </div>
                         <div class="radio_button">
                             <input type="radio" :id="question.ept_id + 1" name="answer" :value="'Ne'"
                                 :checked="getAnswer(question.ept_id, 'eou_tekst') === 'Ne'"
                                 @change="handleRadioChange(question.ept_id, 'Ne', $event.target)"
-                                :disabled="finishedUpitnik">
+                                :disabled="status === 1">
                             <label :for="question.ept_id + 1">Ne</label>
                         </div>
                     </form>
@@ -115,7 +115,7 @@
 <script setup>
 import { ref, onMounted, watch, computed, defineProps } from 'vue';
 import { useRouter } from 'vue-router';
-import { getQuestionsForGroup, getAnswersForUpitnik, setValueForAnswer, checkIfAnswerIsAnswered } from '~/services/services';
+import { getQuestionsForGroup, getAnswersForUpitnik, setValueForAnswer, checkIfAnswerIsAnswered, getStatusUpitnika } from '~/services/services';
 import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
 import { useUserInfoStore } from '~/stores/userInfoStore';
 
@@ -138,13 +138,20 @@ const ezu_id = computed(() => {
     return isNaN(id) ? 0 : parseInt(id);
 });
 
-const finishedUpitnik = computed(() => upitnikInfoStore.finished);
+const status = ref(null);
+const finishedUpitnik = async () => {
+    const result = await getStatusUpitnika(ezu_id.value);
+    status.value = parseInt(result[0].ezu_status);
+    console.log("status: ", status.value);
+};
+
 
 const questions = ref([]);
 const answers = ref(null);
 const temporaryAnswers = ref({});
 const visibleInfo = ref(0);
 const selectedCheckboxes = ref({});
+
 
 // Funkcija za dobivanje ID-a grupe iz hasha URL-a
 const getGroupIdFromHash = () => {
@@ -391,6 +398,7 @@ watch(() => props.selectedGroupId, async () => {
 
 onMounted(async () => {
     upitnikInfoStore.initializeStore();
+    finishedUpitnik();
     await fetchQuestions();
     await fetchAnswers();
     initializeSelectedCheckboxes();

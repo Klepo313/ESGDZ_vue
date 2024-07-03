@@ -32,7 +32,7 @@
             </div>
             <form class="pp-content" style="gap: 5px;">
                 <button class="cancelBtn" type="button" @click="toggleFinishPopup">Odustani</button>
-                <button class="finishBtn" id="finishUpitnikBtn" type="button" @click.prevent="lockUpitnik">
+                <button class="finishBtn" id="finishUpitnikBtn" type="button" @click="setLockUpitnik">
                     <!--@click.prevent=""-->
                     <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg" />
                     Zaključaj upitnik
@@ -49,10 +49,10 @@
             </span>
         </div>
         <div class="buttons">
-            <!-- <button v-if="isDashboardRoute" class="activeButton" @click="toggleFinishPopup">
-                <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg"/>
+            <button v-if="isDashboardRoute" class="activeButton" @click="toggleFinishPopup">
+                <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg" />
                 Zaključaj upitnik
-            </button> -->
+            </button>
             <button v-if="isUpitnikRoute" @click="togglePopup(); fetchVrsteUpitnika();" class="activeButton">
                 <font-awesome-icon class="nav-icon" icon="file-circle-plus" size="lg" />
                 Novi upitnik
@@ -72,7 +72,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useUserInfoStore } from '#imports';
 import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
 // import { useUpitnikInfoStore } from '#imports';
-import { getVrsteUpitnika, createNewUpitnik } from '~/services/services';
+import { getVrsteUpitnika, createNewUpitnik, lockUpitnik } from '~/services/services';
 
 const route = useRoute();
 const router = useRouter();
@@ -128,9 +128,12 @@ const toggleFinishPopup = () => {
     isFinishPopupVisible.value = !isFinishPopupVisible.value;
 };
 
-const lockUpitnik = () => {
-    upitnikInfoStore.finished = true;
+const setLockUpitnik = async () => {
+    //upitnikInfoStore.finished = true;
+    const p_ezu_id = computed(() => upitnikInfoStore.ezu_id).value;
+    await lockUpitnik(parseInt(p_ezu_id));
     isFinishPopupVisible.value = !isFinishPopupVisible.value;
+    location.reload();
 }
 
 watch(isPopupVisible, (newValue) => {

@@ -127,12 +127,7 @@ export async function getStatusUpitnika(p_ezu_id){
 
 export async function lockUpitnik(p_ezu_id){
     try {
-        const response = await limit(() => axios.get(`${public_url}/lock-upitnik/${p_ezu_id}`));
-        // const response = await axios.get(`${public_url}/lock-upitnik`, {
-        //     params: {
-        //         p_ezu_id
-        //     }
-        // });
+        const response = await limit(() => axios.post(`${public_url}/lock-upitnik/${p_ezu_id}`));
         return response.data;
     } catch (error) {
         console.error('Error locking upitnik:', error);
