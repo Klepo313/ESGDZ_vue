@@ -12,12 +12,12 @@
             <div v-if="upitnici" class="content">
                 <div class="content-div active-div">
                     <h2>Aktivni upitnici</h2>
-                    <span v-if="!upitnici || upitnici.length === 0" class="info_empty">
+                    <span v-if="!aktivniUpitnici || aktivniUpitnici.length === 0" class="info_empty">
                         <font-awesome-icon icon="circle-info" size="s" />
                         Nema aktivnih upitnika
                     </span>
                     <TransitionGroup v-else name="list" tag="div" class="upitnici">
-                        <div v-for="upitnik in upitnici" :key="upitnik.ezu_id" :data-key="upitnik.ezu_id"
+                        <div v-for="upitnik in aktivniUpitnici" :key="upitnik.ezu_id" :data-key="upitnik.ezu_id"
                             class="upitnik" @click="routerToDashboard">
                             <div class="upt-header">
                                 <font-awesome-icon icon="file-pen" class="first-element" size="lg" />
@@ -35,7 +35,7 @@
                                 :class="['upt-info', { 'active': visibleInfo === parseInt(upitnik.ess_id) }]">
                                 <font-awesome-icon icon="chart-simple" />
                                 <span class="grid-item"
-                                    style="color: green; text-transform: uppercase; font-weight: 600;">Aktivno</span>
+                                    style="color: green; text-transform: uppercase; font-weight: 600;">U pripremi</span>
                                 <font-awesome-icon icon="calendar-plus" />
                                 <span class="grid-item">{{ formatDate(upitnik.ezu_kreirano) }}</span>
                                 <!-- <font-awesome-icon icon="calendar-check" />
@@ -47,11 +47,40 @@
                     </TransitionGroup>
                 </div>
                 <div class="content-div inactive-div">
-                    <h2>Prethodni upitnici</h2>
-                    <span class="info_empty">
+                    <h2>Zaključani upitnici</h2>
+                    <span v-if="!zakljuceniUpitnici || zakljuceniUpitnici.length === 0" class="info_empty">
                         <font-awesome-icon icon="circle-info" size="s" />
-                        Nema prethodnih upitnika
+                        Nema zaključanih upitnika
                     </span>
+                    <TransitionGroup v-else name="list" tag="div" class="upitnici">
+                        <div v-for="upitnik in zakljuceniUpitnici" :key="upitnik.ezu_id" :data-key="upitnik.ezu_id"
+                            class="upitnik" @click="routerToDashboard">
+                            <div class="upt-header">
+                                <font-awesome-icon icon="file-pen" class="first-element" size="lg" />
+                                <span class="second-element">
+                                    <nuxt-link to="/" @click="setUpitnikData(upitnik);"
+                                        style="text-decoration: none; color: inherit;">
+                                        {{ upitnik.evu_naziv }} ({{ formatDate(upitnik.ezu_kreirano) }})
+                                    </nuxt-link>
+                                </span>
+                                <font-awesome-icon @click="toggleInfo(upitnik)"
+                                    :icon="visibleInfo === parseInt(upitnik.ezu_id) ? 'chevron-up' : 'chevron-down'"
+                                    class="icon" size="lg" />
+                            </div>
+                            <div v-show="visibleInfo === parseInt(upitnik.ezu_id)"
+                                :class="['upt-info', { 'active': visibleInfo === parseInt(upitnik.ess_id) }]">
+                                <font-awesome-icon icon="chart-simple" />
+                                <span class="grid-item"
+                                    style="color: red; text-transform: uppercase; font-weight: 600;">Zaključeno</span>
+                                <font-awesome-icon icon="calendar-plus" />
+                                <span class="grid-item">{{ formatDate(upitnik.ezu_kreirano) }}</span>
+                                <!-- <font-awesome-icon icon="calendar-check" />
+                                <span class="grid-item">{{ formatDate(upitnik.ezu_datum) }}</span> -->
+                                <font-awesome-icon icon="user" />
+                                <span class="grid-item">{{ kor_korime.toLowerCase() }}</span>
+                            </div>
+                        </div>
+                    </TransitionGroup>
                 </div>
             </div>
             <div v-else>
@@ -65,7 +94,7 @@
 import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
 import { useUserInfoStore } from '~/stores/userInfoStore.js';
 import { computed, ref, onBeforeMount, TransitionGroup } from 'vue';
-import { getUpitnici } from '~/services/services';
+import { getUpitnici, getStatusUpitnika } from '~/services/services';
 import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
 
@@ -82,6 +111,9 @@ onBeforeMount(() => {
 // Reactive property za prikazivanje Loading komponente
 const isLoading = ref(true);
 const upitnici = ref([]);
+const aktivniUpitnici = ref([]);
+const zakljuceniUpitnici = ref([]);
+
 const visibleInfo = ref(0);
 
 const userInfoStore = useUserInfoStore();
@@ -101,6 +133,10 @@ const kor_korime = computed(() => {
     const korime = userInfoStore.ekoKorime;
     return korime ? korime : '';  // Vrati prazan string ako je null
 });
+// const ezu_id = computed(() => {
+//     const id = upitnikInfoStore.getEzuId;
+//     return isNaN(id) ? 0 : parseInt(id);
+// });
 
 const toggleInfo = (upitnik) => {
     const ezu_id = parseInt(upitnik.ezu_id);
@@ -121,11 +157,30 @@ const toggleInfo = (upitnik) => {
     }
 };
 
+const sortUpitnike = async () => {
+    for (let i = 0; i < upitnici.value.length; i++) {
+        const data = await getStatusUpitnika(parseInt(upitnici.value[i].ezu_id));
+        // console.log(parseInt(upitnici.value[i].ezu_id), ", ", data);
+        // console.log("Status: ", data[0].ezu_status)
+        if (data[0].ezu_status == 0) {
+            aktivniUpitnici.value.push(upitnici.value[i])
+        } else {
+            zakljuceniUpitnici.value.push(upitnici.value[i])
+        }
+    }
+
+    console.log("Aktivni upitnici: ", aktivniUpitnici.value);
+    console.log("Zakljuceni upitnici: ", zakljuceniUpitnici.value);
+}
+
 const fetchUpitnici = async () => {
     try {
         const data = await getUpitnici(kor_korime.value, tvk_id.value);
         upitnici.value = data;
         console.log(upitnici.value);
+
+        sortUpitnike();
+
     } catch (error) {
         console.error('Pogreška prilikom dohvaćanja upitnika:', error);
     } finally {
@@ -160,9 +215,9 @@ watch(tvk_id, async (newTvkId) => {
     }
 });
 
-watchEffect(async () => {
-    await fetchUpitnici();
-});
+// watchEffect(async () => {
+//     await fetchUpitnici();
+// });
 
 onMounted(async () => {
     userInfoStore.initializeStore();

@@ -49,10 +49,12 @@
             </span>
         </div>
         <div class="buttons">
-            <button v-if="isDashboardRoute" class="activeButton" @click="toggleFinishPopup">
+            <button v-if="isDashboardRoute && status && status.length > 0 && status[0].ezu_status == 0"
+                class="activeButton" @click="toggleFinishPopup">
                 <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg" />
                 Zaključaj upitnik
             </button>
+
             <button v-if="isUpitnikRoute" @click="togglePopup(); fetchVrsteUpitnika();" class="activeButton">
                 <font-awesome-icon class="nav-icon" icon="file-circle-plus" size="lg" />
                 Novi upitnik
@@ -67,12 +69,12 @@
 </template>
 
 <script setup>
-import { defineProps, ref, computed } from 'vue';
+import { defineProps, ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUserInfoStore } from '#imports';
 import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
 // import { useUpitnikInfoStore } from '#imports';
-import { getVrsteUpitnika, createNewUpitnik, lockUpitnik } from '~/services/services';
+import { getVrsteUpitnika, createNewUpitnik, lockUpitnik, getStatusUpitnika } from '~/services/services';
 
 const route = useRoute();
 const router = useRouter();
@@ -82,6 +84,7 @@ const upitnikInfoStore = useUpitnikInfoStore();
 
 const vrsteUpitnika = ref([]);
 const selectedEvuSif = ref('');
+const status = ref(null);
 
 const props = defineProps({
     tvkId: Number,
@@ -115,6 +118,8 @@ const isUpitnikRoute = computed(() => route.path === '/upitnik');
 
 const isDashboardRoute = computed(() => route.path === '/');
 
+const p_ezu_id = computed(() => upitnikInfoStore.ezu_id).value;
+
 // Reactive property to control popup visibility
 const isPopupVisible = ref(false);
 const isFinishPopupVisible = ref(false);
@@ -128,9 +133,14 @@ const toggleFinishPopup = () => {
     isFinishPopupVisible.value = !isFinishPopupVisible.value;
 };
 
+const checkStatusUpitnika = async () => {
+    console.log("p_ezu_id: " + p_ezu_id);
+    status.value = await getStatusUpitnika(parseInt(p_ezu_id));
+    console.log("Status upitnika: ", status.value);
+}
+
+
 const setLockUpitnik = async () => {
-    //upitnikInfoStore.finished = true;
-    const p_ezu_id = computed(() => upitnikInfoStore.ezu_id).value;
     await lockUpitnik(parseInt(p_ezu_id));
     isFinishPopupVisible.value = !isFinishPopupVisible.value;
     location.reload();
@@ -180,6 +190,10 @@ const handleButtonClick = async () => {
         console.error('Error creating upitnik:', error);
     }
 };
+
+onMounted(async () => {
+    await checkStatusUpitnika();
+});
 
 </script>
 
