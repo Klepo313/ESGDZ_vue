@@ -22,19 +22,6 @@
                     </span>
                 </li>
                 <div class="input_div">
-
-                    <!-- TEKSTUALNI unos -->
-                    <input v-if="question.ept_vrstaodg == 'TEKST'" type="text" placeholder="Unesi tekst"
-                        :value="getAnswer(question.ept_id, 'eou_tekst')"
-                        @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value, $event.target)"
-                        :class="{ 'border-red': question.isInvalid }" :disabled="status === 1">
-
-                    <!-- NUMERIČKI unos -->
-                    <input v-else-if="question.ept_vrstaodg == 'BROJ'" type="number" placeholder="Unesi broj"
-                        :value="getAnswer(question.ept_id, 'eou_broj')"
-                        @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value, $event.target)"
-                        :class="{ 'border-red': question.isInvalid }" :disabled="status === 1">
-
                     <!-- TEKSTUALNI unos -->
                     <!-- <input v-if="question.ept_vrstaodg == 'TEKST'" type="text" placeholder="Unesi tekst"
                         :value="computedAnswer(question.ept_id, 'eou_tekst')"
@@ -47,6 +34,18 @@
                         @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), question.ept_id, $event.target.value)"
                         :class="{ 'border-red': isInvalid(question.ept_id) }" :disabled="status.value === 1"> -->
 
+                    <!-- TEKSTUALNI unos -->
+                    <input v-if="question.ept_vrstaodg == 'TEKST'" type="text" placeholder="Unesi tekst"
+                        v-on:keyup="adjustFontSize($event.target)" :value="getAnswer(question.ept_id, 'eou_tekst')"
+                        @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value, $event.target)"
+                        :class="{ 'border-red': question.isInvalid }" :disabled="status === 1">
+
+                    <!-- NUMERIČKI unos -->
+                    <input v-else-if="question.ept_vrstaodg == 'BROJ'" type="number" placeholder="Unesi broj"
+                        v-on:keyup="adjustFontSize($event.target)" :value="getAnswer(question.ept_id, 'eou_broj')"
+                        @blur="handleBlur(getAnswer(question.ept_id, 'eou_id'), $event.target.value, $event.target)"
+                        :class="{ 'border-red': question.isInvalid }" :disabled="status === 1">
+
                     <!-- ODABERI OPCIJU unos -->
                     <select v-else-if="question.ept_vrstaodg == 'IZBOR'" name="select_option" id="select_option"
                         :value="getAnswer(question.ept_id, 'eou_eso_id') || 'default'"
@@ -58,7 +57,6 @@
                             {{ answer.eso_odgovor }}
                         </option>
                     </select>
-
                     <!-- ODABERI VIŠESTRUKE OPCIJE unos -->
                     <form v-else-if="question.ept_vrstaodg == 'IZBORVIS'" action="">
                         <label class="checkbox_button" v-for="answer in question.possibleAnswers" :key="answer.eso_id">
@@ -151,7 +149,7 @@ const answers = ref(null);
 const temporaryAnswers = ref({});
 const visibleInfo = ref(0);
 const selectedCheckboxes = ref({});
-
+const inputWidths = ref({});
 
 // Funkcija za dobivanje ID-a grupe iz hasha URL-a
 const getGroupIdFromHash = () => {
@@ -386,6 +384,22 @@ const isChecked = (questionId, answerId) => {
     return false;
 };
 
+// Funkcija za prilagođavanje veličine fonta inputa/selecta
+const adjustFontSize = (element) => {
+    const maxFontSize = 14;
+    const minFontSize = 10;
+    const charLimit = 50; // Broj karaktera pri kojem se veličina fonta počinje smanjivati
+
+    let newSize = maxFontSize;
+
+    if (element.value.length > charLimit) {
+        newSize = maxFontSize - (element.value.length - charLimit);
+        newSize = newSize < minFontSize ? minFontSize : newSize;
+    }
+
+    element.style.fontSize = newSize + "px";
+};
+
 watch(() => props.selectedGroupId, async () => {
     await fetchQuestions();
     await fetchAnswers();
@@ -401,7 +415,6 @@ onMounted(async () => {
     finishedUpitnik();
     await fetchQuestions();
     await fetchAnswers();
-    initializeSelectedCheckboxes();
 });
 </script>
 
@@ -458,6 +471,13 @@ ol li::marker {
     color: var(--primary-color);
     font-size: 16px;
     font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    height: 40.8px !important;
+    font-size: 14px;
 }
 
 input[type="radio"] {
