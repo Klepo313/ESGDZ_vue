@@ -179,6 +179,8 @@ const fetchUpitnici = async () => {
         upitnici.value = data;
         console.log(upitnici.value);
 
+        aktivniUpitnici.value = [];
+        zakljuceniUpitnici.value = [];
         sortUpitnike();
 
     } catch (error) {
