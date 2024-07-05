@@ -2,14 +2,13 @@
     <div>
         <div class="sidebar">
             <span v-if="upitnik && upitnik[0]" class="sidebar-main router_span" @click="toggleExpanded_main">
-                <!--@click="toggleExpanded_main"-->
                 <font-awesome-icon icon="layer-group" size="lg" />
                 <span class="sidebar-main-text">{{ upitnikInfoStore.getEzuNaziv }}</span>
-                <!-- <font-awesome-icon :icon="expanded ? 'chevron-down' : 'chevron-right'" class="arrow"  /> -->
             </span>
             <ul class="sidebar-list" v-if="expanded && upitnikData">
                 <li class="sidebar-item" v-for="group in upitnikData" :key="group.id">
-                    <span class="sidebar-sub router_span" @click="toggleExpanded(group.id); displayQuestions(group);">
+                    <span class="sidebar-sub router_span" @click="toggleExpanded(group.id); displayQuestions(group);"
+                        :class="{ 'selected-group': selectedGroupId === group.id }">
                         <font-awesome-icon icon="bars-staggered" size="lg" />
                         <span class="sidebar-text">{{ group.name }}</span>
                         <font-awesome-icon v-if="group.children && group.children.length > 0" class="arrow arrow-sub"
@@ -21,7 +20,8 @@
                         v-if="isExpanded(group.id) && group.children && group.children.length > 0">
                         <li class="sidebar-item" v-for="category in group.children" :key="category.id">
                             <span class="sidebar-sub router_span"
-                                @click="toggleSubExpanded(category.id); displayQuestions(category);">
+                                @click="toggleSubExpanded(category.id); displayQuestions(category);"
+                                :class="{ 'selected-group': selectedGroupId === category.id }">
                                 <font-awesome-icon icon="list" size="lg" />
                                 <span class="sidebar-text">{{ category.name }}</span>
                                 <font-awesome-icon v-if="category.children && category.children.length > 0"
@@ -29,13 +29,13 @@
                                     :icon="isSubExpanded(category.id) ? 'chevron-down' : 'chevron-right'" />
                                 <font-awesome-icon v-else class="arrow2" icon="circle-check"
                                     v-if="answeredGroups[category.id] !== undefined && answeredGroups[category.id]" />
-
                             </span>
                             <ul class="sidebar-sub-list"
                                 v-if="isSubExpanded(category.id) && category.children && category.children.length > 0">
                                 <li class="sidebar-item" v-for="subcategory in category.children" :key="subcategory.id"
                                     @click="displayQuestions(subcategory)">
-                                    <span class="sidebar-sub">
+                                    <span class="sidebar-sub router_span"
+                                        :class="{ 'selected-group': selectedGroupId === subcategory.id }">
                                         <font-awesome-icon icon="list-check" />
                                         <span class="sidebar-text">{{ subcategory.name }}</span>
                                         <font-awesome-icon
@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, onBeforeMount, onMounted, defineEmits } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useBreadcrumbStore } from '~/stores/breadcrumbStore';
 import { useUpitnikInfoStore } from '#imports';
 import { getAnsweredQuestionsForGroup } from '~/services/services';
@@ -78,12 +78,10 @@ const p_ezu_id = computed(() => {
 
 const answeredGroups = ref({});
 
-// Nadogradnja upitnikData objekta
 const checkIfGroupIsAnswered = async (p_ezu_id, p_ess_id) => {
     const response = await getAnsweredQuestionsForGroup(p_ezu_id, parseInt(p_ess_id));
     const odgovoreno = response[0].uk_odgovoreno;
     const ukupno = response[0].uk_pitanja;
-
     return odgovoreno === ukupno;
 };
 
@@ -110,45 +108,17 @@ watchEffect(() => {
     }
 });
 
-console.log(props.upitnikData)
-
 const emit = defineEmits(['group-selected']);
 
-// const loadData = async () => {
-//     upitnik.value = await getUpitnikData(props.evu_sif);
-//     if (upitnik.value && upitnik.value.length > 0) {
-//         upitnikData.value = upitnik.value[0].children;
-//         upitnikInfoStore.setEzuNaziv(upitnik.value[0].name)
-//     }
-// }
-
-// // Initial load
-// await loadData();
-// console.log(upitnikData.value);
-
-// // Watch for changes in evu_sif and reload data
-// watch(() => props.evu_sif, async (newVal, oldVal) => {
-//     if (newVal !== oldVal) {
-//         await loadData();
-//     }
-// });
-
-// Reaktivna stanja koristeći Composition API
-
-
-// Metode za preokretanje stanja
-
 const expanded = ref(true);
-const expandedGroups = ref({}); // Proširenje za grupe
-const expandedSubGroups = ref({}); // Proširenje za podgrupe
+const expandedGroups = ref({});
+const expandedSubGroups = ref({});
+const selectedGroupId = ref(null);
 
-// Prošri/sažmi sve
 const toggleExpanded_main = () => {
-    // Check if any group or sub-group is expanded
     const anyExpanded = Object.values(expandedGroups.value).some(val => val) || Object.values(expandedSubGroups.value).some(val => val);
 
     if (anyExpanded) {
-        // Collapse all
         Object.keys(expandedGroups.value).forEach(id => {
             expandedGroups.value[id] = false;
         });
@@ -156,7 +126,6 @@ const toggleExpanded_main = () => {
             expandedSubGroups.value[id] = false;
         });
     } else {
-        // Expand all
         props.upitnikData.forEach(group => {
             expandedGroups.value[group.id] = true;
             if (group.children && group.children.length > 0) {
@@ -168,19 +137,16 @@ const toggleExpanded_main = () => {
     }
 };
 
-
-// Metode za toggle
 const toggleExpanded = (id) => {
-    expandedGroups.value[id] = !expandedGroups.value[id]; // Proširenje ili sužavanje
+    expandedGroups.value[id] = !expandedGroups.value[id];
 };
 
 const toggleSubExpanded = (id) => {
-    expandedSubGroups.value[id] = !expandedSubGroups.value[id]; // Preokretanje proširenja
+    expandedSubGroups.value[id] = !expandedSubGroups.value[id];
 };
 
-// Metode za provjeru stanja
-const isExpanded = (id) => !!expandedGroups.value[id]; // Ako je ID true, prošireno je
-const isSubExpanded = (id) => !!expandedSubGroups.value[id]; // Ako je ID true, prošireno je
+const isExpanded = (id) => !!expandedGroups.value[id];
+const isSubExpanded = (id) => !!expandedSubGroups.value[id];
 
 const addToBreadcrumb = (group) => {
     breadcrumbStore.addToBreadcrumbPath(group);
@@ -188,16 +154,12 @@ const addToBreadcrumb = (group) => {
 
 const displayQuestions = (group) => {
     addToBreadcrumb(group);
-    // Provjeri postoji li podniz possibleAnswers u grupi
+    selectedGroupId.value = group.id;
     if (group.questions != 0 || !group.children || !group.children.length > 0) {
-        // Emitiramo event s ID-jem grupe
         emit('group-selected', group.id);
         navigateTo(`/#${group.id}`);
     }
-
-
 }
-
 
 const findGroupById = (groups, id) => {
     for (const group of groups) {
@@ -211,7 +173,7 @@ const findGroupById = (groups, id) => {
             }
         }
     }
-    return null; // Ako nije pronađen odgovarajući ID
+    return null;
 };
 
 const handleHashChange = () => {
@@ -219,7 +181,8 @@ const handleHashChange = () => {
     if (!isNaN(groupIdFromHash)) {
         const selectedGroup = findGroupById(props.upitnikData, groupIdFromHash);
         if (selectedGroup) {
-            props.selectedGroupId = selectedGroup.id;
+            selectedGroupId.value = selectedGroup.id;
+            expandToGroup(selectedGroup.id);
             displayQuestions(selectedGroup);
         } else {
             console.error(`Group with ID ${groupIdFromHash} not found.`);
@@ -227,17 +190,35 @@ const handleHashChange = () => {
     }
 };
 
+const expandToGroup = (id) => {
+    const expandParents = (groups) => {
+        for (const group of groups) {
+            if (group.id === id || (group.children && group.children.some(child => child.id === id))) {
+                expandedGroups.value[group.id] = true;
+            }
+            if (group.children && group.children.length > 0) {
+                expandParents(group.children);
+            }
+        }
+    }
+    expandParents(props.upitnikData);
+};
+
+watch(() => props.upitnikData, () => {
+    handleHashChange();
+}, { immediate: true });
+
 onMounted(() => {
-    handleHashChange(); // Pozivamo funkciju prilikom montiranja komponente da bismo odmah reagirali na trenutni hash
-    window.addEventListener('hashchange', handleHashChange); // Dodajemo event listener za promjenu hash-a
-    updateAnsweredGroups(); // Pokrenite ažuriranje odgovora
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    updateAnsweredGroups();
 });
 
 onBeforeUnmount(() => {
-    window.removeEventListener('hashchange', handleHashChange); // Uklanjamo event listener prilikom unmountanja komponente da bismo izbjegli memory leak
+    window.removeEventListener('hashchange', handleHashChange);
 });
-
 </script>
+
 
 <style scoped>
 * {
@@ -280,6 +261,8 @@ onBeforeUnmount(() => {
     gap: 10px;
     align-items: center;
     padding: 10px 18px;
+    border-radius: 5px;
+    /* background-color: #0b79bd33; */
 }
 
 .sidebar-item {
@@ -293,11 +276,19 @@ onBeforeUnmount(() => {
 
 .sidebar-sub:hover {
     background-color: rgba(0, 0, 0, 0.116);
-    border-radius: 5px;
 }
 
 .sidebar-sub:hover .arrow-sub {
     opacity: 1;
+}
+
+.selected-group {
+    background-color: #a8d1f7;
+    cursor: default;
+}
+
+.selected-group:hover {
+    background-color: #a8d1f7;
 }
 
 /* Stil za podliste */
