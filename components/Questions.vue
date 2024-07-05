@@ -478,6 +478,7 @@ input[type="number"],
 select {
     height: 40.8px !important;
     font-size: 14px;
+    text-overflow: ellipsis;
 }
 
 input[type="radio"] {
