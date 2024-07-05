@@ -1,8 +1,17 @@
 <template>
     <div>
-        <div class="h1-div">
-            <h1>{{ evu_naziv }}</h1>
-            <div class="h1-rctg"></div>
+        <div class="header-div" style="position: relative;">
+            <div class="h1-div">
+                <h1>
+                    {{ evu_naziv }}
+                </h1>
+                <div class="h1-rctg"></div>
+            </div>
+            <span v-if="status"
+                :class="{ 'status-yellow': status[0].ezu_status == 0, 'status-green': status[0].ezu_status == 1 }"
+                class="status">
+                {{ status[0].status_txt }}
+            </span>
         </div>
         <div class="breadcrumber-div">
             <div class="link-div">
@@ -23,6 +32,16 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
+import { getStatusUpitnika } from '~/services/services';
+import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
+
+const upitnikInfoStore = useUpitnikInfoStore();
+
+const ezu_id = computed(() => {
+    const id = upitnikInfoStore.getEzuId;
+    return isNaN(id) ? 0 : parseInt(id);
+});
 
 const props = defineProps({
     evu_naziv: String,
@@ -31,9 +50,23 @@ const props = defineProps({
     selectedGroupId: Number
 });
 
+const status = ref(null);
+
+onMounted(async () => {
+    status.value = await getStatusUpitnika(ezu_id.value);
+})
+
+
 </script>
 
 <style scoped>
+.header-div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .content-div {
     margin-top: 10px;
 
@@ -102,5 +135,23 @@ const props = defineProps({
     /* Omogućuje skrolanje samo po vertikali */
     position: relative;
     /* Za pseudo-elemente */
+}
+
+.status {
+    /* position: absolute;
+    right: 0;
+    top: 10px; */
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-yellow {
+    color: var(--yellow);
+    /* color: rgb(179, 167, 0); */
+}
+
+.status-green {
+    color: var(--green);
 }
 </style>

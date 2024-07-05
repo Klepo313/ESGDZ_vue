@@ -5,11 +5,6 @@
         <div class="grid">
             <nuxt-link tag="div" class="grid-item img-section">
                 <img class="agram-logo" src=".././public/images/agram_lolo.png" alt="agram_logo">
-                <span v-if="status"
-                    :class="{ 'status-yellow': status[0].ezu_status == 0, 'status-green': status[0].ezu_status == 1 }"
-                    class="status">
-                    {{ status[0].status_txt }}
-                </span>
             </nuxt-link>
             <div class="grid-item header">
                 <Navbar :tvkId="tvk_id" :korId="kor_id" :korKorime="kor_korime.toLowerCase()" />
@@ -110,7 +105,7 @@ const loadData = async () => {
     try {
         upitnik.value = await getUpitnikData(evu_sif.value);
         answers.value = await getAnswersForUpitnik(ezu_id.value);
-        status.value = await getStatusUpitnika(ezu_id.value);
+        //status.value = await getStatusUpitnika(ezu_id.value);
         console.log(answers.value);
         console.log(status.value);
         if (upitnik.value && upitnik.value.length > 0) {
