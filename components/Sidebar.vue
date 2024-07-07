@@ -58,6 +58,9 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useBreadcrumbStore } from '~/stores/breadcrumbStore';
 import { useUpitnikInfoStore } from '#imports';
 import { getAnsweredQuestionsForGroup } from '~/services/services';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const breadcrumbStore = useBreadcrumbStore();
 const upitnikInfoStore = useUpitnikInfoStore();
@@ -204,7 +207,12 @@ const expandToGroup = (id) => {
     expandParents(props.upitnikData);
 };
 
-watch(() => props.upitnikData, () => {
+// watch(() => props.upitnikData, () => {
+//     handleHashChange();
+// }, { immediate: true });
+
+// Pratimo promjene u hashu
+watch(() => router.currentRoute.value.hash, async (newHash, oldHash) => {
     handleHashChange();
 }, { immediate: true });
 

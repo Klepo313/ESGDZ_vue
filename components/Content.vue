@@ -21,10 +21,18 @@
         <div class="component-div">
             <div class="content-div">
                 <h2>Pitanja</h2>
-                <button id="checkBtn" type="button" disabled>
+                <!--<button id="checkBtn" type="button" disabled>
                     <font-awesome-icon icon="check-double" />
                     Provjeri odgovore
-                </button>
+                </button>-->
+                <div class="bckfwrd">
+                    <button type="button" id="backButton" class="arrow_btn" @click="goToPreviousGroup">
+                        <font-awesome-icon icon="arrow-left" size="lg" />
+                    </button>
+                    <button type="button" id="fwrdButton" class="arrow_btn" @click="goToNextGroup">
+                        <font-awesome-icon icon="arrow-right" size="lg" />
+                    </button>
+                </div>
             </div>
             <Questions :selectedGroupId="selectedGroupId" /> <!--  :ess_id="ezu_ess_id"-->
         </div>
@@ -35,7 +43,9 @@
 import { onMounted } from 'vue';
 import { getStatusUpitnika } from '~/services/services';
 import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const upitnikInfoStore = useUpitnikInfoStore();
 
 const ezu_id = computed(() => {
@@ -50,13 +60,88 @@ const props = defineProps({
     selectedGroupId: Number
 });
 
+const totalSize = computed(() => {
+    return props.upitnikData.reduce((count, item) => {
+        return count + (item.children ? item.children.length : 0);
+    }, 0);
+});
+
+const lastItem = computed(() => {
+    const allItems = props.upitnikData.flatMap(item => item.children || []);
+    return allItems.length > 0 ? allItems[allItems.length - 1] : null;
+});
+
+// console.log("Upitnik: ", props.upitnikData)
+// console.log("evo ID: ", props.upitnikData[0].id)
+// console.log("Zadnji element: ", lastItem.value.id);
+// console.log("Velicina upitnika: ", totalSize.value);
+
 const status = ref(null);
+const firstGroupId = parseInt(props.upitnikData[0].id);
+const lastGroupId = parseInt(lastItem.value.id);
+const currentId = ref(0);
+
+// Funkcija za dobivanje ID-a grupe iz hasha URL-a
+const getGroupIdFromHash = () => {
+    const hash = router.currentRoute.value.hash;
+    if (!hash || hash === '#') return null;
+    return parseInt(hash.slice(1)); // Ukloni '#' i pretvori u broj
+};
+
+currentId.value = getGroupIdFromHash();
+
+// Pratimo promjene u hashu
+watch(() => router.currentRoute.value.hash, async (newHash, oldHash) => {
+    currentId.value = getGroupIdFromHash();
+    checkPreviousGroup();
+    checkNextGroup();
+});
+
+const checkPreviousGroup = () => {
+    const back_arrow = document.getElementById('backButton');
+    if ((currentId.value - 1) < firstGroupId) {
+        back_arrow.style.opacity = '0.5';
+        back_arrow.classList.add('no-hover', 'no-active');
+        return false;
+    } else {
+        back_arrow.style.opacity = '1';
+        back_arrow.classList.remove('no-hover', 'no-active');
+        return true;
+    }
+}
+
+const checkNextGroup = () => {
+    const fwrd_arrow = document.getElementById('fwrdButton');
+    if ((currentId.value + 1) > lastGroupId) {
+        fwrd_arrow.style.opacity = '0.5';
+        fwrd_arrow.classList.add('no-hover', 'no-active');
+        return false;
+    } else {
+        fwrd_arrow.style.opacity = '1';
+        fwrd_arrow.classList.remove('no-hover', 'no-active');
+        return true;
+    }
+}
+
+const goToPreviousGroup = () => {
+    if (checkPreviousGroup()) {
+        currentId.value--;
+        router.push(`#${currentId.value}`);
+    }
+}
+
+const goToNextGroup = () => {
+    if (checkNextGroup()) {
+        currentId.value++;
+        router.push(`#${currentId.value}`);
+    }
+}
 
 onMounted(async () => {
     status.value = await getStatusUpitnika(ezu_id.value);
+    checkPreviousGroup();
+    checkNextGroup();
 })
-
-
 </script>
 
 <style scoped>
@@ -153,5 +238,36 @@ onMounted(async () => {
 
 .status-green {
     color: var(--green);
+}
+
+.bckfwrd {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.arrow_btn {
+    outline: none;
+    background: none;
+    border: none;
+}
+
+.arrow_btn:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+}
+
+.arrow_btn:active {
+    transform: scale(1.2);
+}
+
+.no-hover {
+    pointer-events: none;
+}
+
+.no-active:active {
+    pointer-events: none;
 }
 </style>

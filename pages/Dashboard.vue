@@ -38,6 +38,9 @@ import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
 import { useUserInfoStore } from '~/stores/userInfoStore';
 import { getUpitnikData, getAnswersForUpitnik, getStatusUpitnika } from '~/services/services';
 import Cookies from 'js-cookie';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 onBeforeMount(() => {
     // const ekoParId = localStorage.getItem('eko_par_id_za');
@@ -97,7 +100,6 @@ const ezu_id = computed(() => {
 const upitnik = ref(null);
 const upitnikData = ref(null);
 const answers = ref(null);
-const status = ref(null);
 const selectedGroupId = ref(null);
 
 const loadData = async () => {
@@ -105,9 +107,6 @@ const loadData = async () => {
     try {
         upitnik.value = await getUpitnikData(evu_sif.value);
         answers.value = await getAnswersForUpitnik(ezu_id.value);
-        //status.value = await getStatusUpitnika(ezu_id.value);
-        console.log(answers.value);
-        console.log(status.value);
         if (upitnik.value && upitnik.value.length > 0) {
             upitnikData.value = upitnik.value[0].children;
             //upitnikInfoStore.setEzuNaziv(upitnik.value[0].name)
@@ -128,6 +127,19 @@ watch(evu_sif, async (newVal, oldVal) => {
 const handleGroupSelected = (groupId) => {
     selectedGroupId.value = groupId;
 };
+
+// Funkcija za dobivanje ID-a grupe iz hasha URL-a
+const getGroupIdFromHash = () => {
+    const hash = router.currentRoute.value.hash;
+    if (!hash || hash === '#') return null;
+    return parseInt(hash.slice(1)); // Ukloni '#' i pretvori u broj
+};
+
+// Pratimo promjene u hashu
+watch(() => router.currentRoute.value.hash, async (newHash, oldHash) => {
+    const groupId = getGroupIdFromHash();
+    selectedGroupId.value = groupId;
+});
 
 onMounted(async () => {
     userInfoStore.initializeStore();
