@@ -151,6 +151,8 @@ const visibleInfo = ref(0);
 const selectedCheckboxes = ref({});
 const inputWidths = ref({});
 
+const emit = defineEmits(['update-selected-options']);
+
 // Funkcija za dobivanje ID-a grupe iz hasha URL-a
 const getGroupIdFromHash = () => {
     const hash = router.currentRoute.value.hash;
@@ -355,6 +357,7 @@ const handleCheckboxChange = async (questionId, answerId, event, inputElement) =
                 inputElement.classList.remove('border-red');
             }
 
+            emit('update-selected-options', selectedCheckboxes.value);
             await fetchAnswers();
             await upitnikInfoStore.fetchAnsweredQuestionsForGroup(props.selectedGroupId);
             await upitnikInfoStore.fetchTotalAnsweredQuestions();
@@ -375,6 +378,8 @@ const initializeSelectedCheckboxes = () => {
             selectedCheckboxes.value[answer.eou_ept_id] = selectedIds;
         }
     });
+    // console.log("selectedCheckboxes prije emita: ", selectedCheckboxes.value);
+    emit('update-selected-options', selectedCheckboxes.value);
 };
 
 const isChecked = (questionId, answerId) => {

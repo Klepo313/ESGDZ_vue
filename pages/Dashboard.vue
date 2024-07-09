@@ -11,11 +11,11 @@
             </div>
             <div class="grid-item sidebar" v-if="upitnik && upitnikData">
                 <Sidebar :evu_sif="evu_sif" :upitnik="upitnik" :upitnikData="upitnikData"
-                    @group-selected="handleGroupSelected" />
+                    :selectedOptions="selectedOptions" @group-selected="handleGroupSelected" />
             </div>
             <div class="grid-item content" v-if="upitnikData && evu_naziv && ezu_ess_id">
                 <Content :evu_naziv="evu_naziv" :ezu_ess_id="ezu_ess_id" :upitnikData="upitnikData"
-                    :selectedGroupId="parseInt(selectedGroupId)" />
+                    :selectedGroupId="parseInt(selectedGroupId)" @update-selected-options="updateSelectedOptions" />
             </div>
             <div class="grid-item graphs last-element" v-if="1 === 1">
                 <Charts :selectedGroupId="parseInt(selectedGroupId)" :upitnikData="upitnikData" />
@@ -101,6 +101,11 @@ const upitnik = ref(null);
 const upitnikData = ref(null);
 const answers = ref(null);
 const selectedGroupId = ref(null);
+const selectedOptions = ref({});
+
+const updateSelectedOptions = (selectedCheckboxes) => {
+    selectedOptions.value = selectedCheckboxes;
+}
 
 const loadData = async () => {
     isLoading.value = true;
@@ -141,11 +146,26 @@ watch(() => router.currentRoute.value.hash, async (newHash, oldHash) => {
     selectedGroupId.value = groupId;
 });
 
+
+const handleKeyPress = (event) => {
+    if (event.ctrlKey && event.key === 'ArrowRight') {
+        // Pozovi svoju funkciju ovdje
+        event.preventDefault(); // Spriječava zadano ponašanje (kao što je otvaranje prozora pretraživača URL)
+        console.log("CTRL + L kliknut");
+    }
+};
+
 onMounted(async () => {
     userInfoStore.initializeStore();
     upitnikInfoStore.initializeStore();
     await loadData();
+    window.addEventListener('keydown', handleKeyPress);
 });
+
+onBeforeUnmount(() => {
+    window.removeEventListener('keydown', handleKeyPress);
+});
+
 </script>
 
 <style scoped>

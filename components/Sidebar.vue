@@ -71,8 +71,11 @@ const props = defineProps({
     upitnikData: {
         type: Array,
         default: () => []
-    }
+    },
+    selectedOptions: Object,
 });
+
+console.log("selectedOptions: ", props.selectedOptions);
 
 const p_ezu_id = computed(() => {
     const id = upitnikInfoStore.ezu_id;
@@ -193,19 +196,24 @@ const handleHashChange = () => {
     }
 };
 
-const expandToGroup = (id) => {
-    const expandParents = (groups) => {
-        for (const group of groups) {
-            if (group.id === id || (group.children && group.children.some(child => child.id === id))) {
+const expandToGroup = (id, groups = props.upitnikData) => {
+    for (const group of groups) {
+        if (group.id === id) {
+            expandedGroups.value[group.id] = true;
+            return true;
+        }
+        if (group.children && group.children.length > 0) {
+            const foundInChildren = expandToGroup(id, group.children);
+            if (foundInChildren) {
                 expandedGroups.value[group.id] = true;
-            }
-            if (group.children && group.children.length > 0) {
-                expandParents(group.children);
+                expandedSubGroups.value[group.id] = true;
+                return true;
             }
         }
     }
-    expandParents(props.upitnikData);
+    return false;
 };
+
 
 // watch(() => props.upitnikData, () => {
 //     handleHashChange();

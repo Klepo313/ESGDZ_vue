@@ -12,12 +12,12 @@
                 <form @submit.prevent="handleSubmit" action="">
                     <div class="input-div">
                         <label class="input-label" for="username">Korisničko ime</label>
-                        <font-awesome-icon icon="user" class="icon" />
+                        <font-awesome-icon :icon="['fas', 'user']" class="icon" />
                         <input type="text" v-model="username" id="username" placeholder="Unesi korisničko ime">
                     </div>
                     <div class="input-div">
                         <label class="input-label" for="password">Lozinka</label>
-                        <font-awesome-icon icon="lock" class="icon" />
+                        <font-awesome-icon :icon="['fas', 'lock']" class="icon" />
                         <input type="password" v-model="password" id="password" placeholder="Unesi lozinku">
                     </div>
                     <button type="submit" class="login-btn" id="loginBtn">
@@ -56,7 +56,7 @@ const handleSubmit = async () => {
     spin_icon.style.display = 'inline';
 
     try {
-        const response = await axios.post(`${public_url}/login`, {
+        const response = await axios.post(`${local_url}/login`, {
             username: username.value.toUpperCase(),
             password: password.value
         });

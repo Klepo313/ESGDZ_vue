@@ -8,7 +8,7 @@
                 <font-awesome-icon @click="refreshData" class="rotate-icon" icon="rotate-right" />
             </div>
             <div class="charts">
-                <div class="chart">
+                <div class="chart" v-if="selectedGroupName != 'nepoznato'">
                     <h4>Odgovoreno za <br> '{{ selectedGroupName }}'</h4>
                     <div class="diagram">
                         <Pie v-if="loadedGroup && selectedGroupId" id="groupChart" class="chart-diagram"

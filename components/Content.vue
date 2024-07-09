@@ -33,15 +33,25 @@
                         <font-awesome-icon icon="arrow-right" size="lg" />
                     </button>
                 </div>
+                <!-- *STARI KOD
+                 <div class="bckfwrd">
+                    <button type="button" id="backButton" class="arrow_btn" @click="goToPreviousGroup">
+                        <font-awesome-icon icon="arrow-left" size="lg" />
+                    </button>
+                    <button type="button" id="fwrdButton" class="arrow_btn" @click="goToNextGroup">
+                        <font-awesome-icon icon="arrow-right" size="lg" />
+                    </button>
+                </div> -->
             </div>
-            <Questions :selectedGroupId="selectedGroupId" /> <!--  :ess_id="ezu_ess_id"-->
+            <Questions :selectedGroupId="selectedGroupId" @update-selected-options="handleUpdateSelectedOptions" />
+            <!--  :ess_id="ezu_ess_id"-->
         </div>
     </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue';
-import { getStatusUpitnika } from '~/services/services';
+import { getStatusUpitnika, getOrderedIDs } from '~/services/services';
 import { useUpitnikInfoStore } from '~/stores/upitnikInfoStore';
 import { useRouter } from 'vue-router';
 
@@ -60,16 +70,22 @@ const props = defineProps({
     selectedGroupId: Number
 });
 
-const totalSize = computed(() => {
-    return props.upitnikData.reduce((count, item) => {
-        return count + (item.children ? item.children.length : 0);
-    }, 0);
-});
+const emit = defineEmits(['update-selected-options']);
 
-const lastItem = computed(() => {
-    const allItems = props.upitnikData.flatMap(item => item.children || []);
-    return allItems.length > 0 ? allItems[allItems.length - 1] : null;
-});
+const handleUpdateSelectedOptions = (selectedCheckboxes) => {
+    emit('update-selected-options', selectedCheckboxes.value);
+}
+
+// const totalSize = computed(() => {
+//     return props.upitnikData.reduce((count, item) => {
+//         return count + (item.children ? item.children.length : 0);
+//     }, 0);
+// });
+
+// const lastItem = computed(() => {
+//     const allItems = props.upitnikData.flatMap(item => item.children || []);
+//     return allItems.length > 0 ? allItems[allItems.length - 1] : null;
+// });
 
 // console.log("Upitnik: ", props.upitnikData)
 // console.log("evo ID: ", props.upitnikData[0].id)
@@ -77,9 +93,10 @@ const lastItem = computed(() => {
 // console.log("Velicina upitnika: ", totalSize.value);
 
 const status = ref(null);
-const firstGroupId = parseInt(props.upitnikData[0].id);
-const lastGroupId = parseInt(lastItem.value.id);
+// const firstGroupId = parseInt(props.upitnikData[0].id);
+// const lastGroupId = parseInt(lastItem.value.id) || parseInt(props.upitnikData[props.upitnikData.length - 1].id);
 const currentId = ref(0);
+const orderedIdList = ref([]);
 
 // Funkcija za dobivanje ID-a grupe iz hasha URL-a
 const getGroupIdFromHash = () => {
@@ -93,13 +110,87 @@ currentId.value = getGroupIdFromHash();
 // Pratimo promjene u hashu
 watch(() => router.currentRoute.value.hash, async (newHash, oldHash) => {
     currentId.value = getGroupIdFromHash();
-    checkPreviousGroup();
-    checkNextGroup();
+    fetchOrderedIds();
 });
+
+// STARI KOD
+// const checkPreviousGroup = () => {
+//     const back_arrow = document.getElementById('backButton');
+//     if ((currentId.value - 1) < firstGroupId) {
+//         back_arrow.style.opacity = '0.5';
+//         back_arrow.classList.add('no-hover', 'no-active');
+//         return false;
+//     } else {
+//         back_arrow.style.opacity = '1';
+//         back_arrow.classList.remove('no-hover', 'no-active');
+//         return true;
+//     }
+// }
+
+// const checkNextGroup = () => {
+//     const fwrd_arrow = document.getElementById('fwrdButton');
+//     if ((currentId.value + 1) > lastGroupId) {
+//         fwrd_arrow.style.opacity = '0.5';
+//         fwrd_arrow.classList.add('no-hover', 'no-active');
+//         return false;
+//     } else {
+//         fwrd_arrow.style.opacity = '1';
+//         fwrd_arrow.classList.remove('no-hover', 'no-active');
+//         return true;
+//     }
+// }
+
+// const goToPreviousGroup = () => {
+//     if (checkPreviousGroup()) {
+//         currentId.value--;
+//         router.push(`#${currentId.value}`);
+//     }
+// }
+
+// const goToNextGroup = () => {
+//     if (checkNextGroup()) {
+//         currentId.value++;
+//         router.push(`#${currentId.value}`);
+//     }
+// }
+
+const fetchOrderedIds = async () => {
+    try {
+        const response = await getOrderedIDs();
+        orderedIdList.value = response
+            .filter(item => item.ess_id_new !== null) // Filtriraj null vrijednosti
+            .map(item => Number(item.ess_id_new));   // Mapiraj u niz brojeva
+    } catch (error) {
+        console.error('Error fetching ordered IDs:', error);
+    }
+
+    console.log("ORDERED: ", orderedIdList.value)
+    if (!(getGroupIdFromHash() === null)) {
+        checkPreviousGroup();
+        checkNextGroup();
+    } else {
+        const back_arrow = document.getElementById('backButton');
+        const fwrd_arrow = document.getElementById('fwrdButton');
+
+        back_arrow.style.opacity = '0.5';
+        back_arrow.classList.add('no-hover', 'no-active');
+        fwrd_arrow.style.opacity = '0.5';
+        fwrd_arrow.classList.add('no-hover', 'no-active');
+    }
+};
 
 const checkPreviousGroup = () => {
     const back_arrow = document.getElementById('backButton');
-    if ((currentId.value - 1) < firstGroupId) {
+    console.log("ordirana lista: ", orderedIdList.value)
+    console.log("current ID: ", currentId.value)
+    const currentIndex = orderedIdList.value.indexOf(currentId.value);
+
+    if (currentIndex === -1) {
+        console.error(`Current ID ${currentId.value} not found in ordered ID list.`);
+        return false;
+    }
+
+    if (currentIndex - 1 < 0) {
         back_arrow.style.opacity = '0.5';
         back_arrow.classList.add('no-hover', 'no-active');
         return false;
@@ -108,11 +199,17 @@ const checkPreviousGroup = () => {
         back_arrow.classList.remove('no-hover', 'no-active');
         return true;
     }
-}
-
+};
 const checkNextGroup = () => {
     const fwrd_arrow = document.getElementById('fwrdButton');
-    if ((currentId.value + 1) > lastGroupId) {
+    const currentIndex = orderedIdList.value.indexOf(currentId.value);
+
+    if (currentIndex === -1) {
+        console.error(`Current ID ${currentId.value} not found in ordered ID list.`);
+        return false;
+    }
+
+    if (currentIndex + 1 >= orderedIdList.value.length || orderedIdList.value[currentIndex + 1] === null) {
         fwrd_arrow.style.opacity = '0.5';
         fwrd_arrow.classList.add('no-hover', 'no-active');
         return false;
@@ -121,26 +218,27 @@ const checkNextGroup = () => {
         fwrd_arrow.classList.remove('no-hover', 'no-active');
         return true;
     }
-}
+};
 
 const goToPreviousGroup = () => {
+    const currentIndex = orderedIdList.value.indexOf(currentId.value);
     if (checkPreviousGroup()) {
-        currentId.value--;
+        currentId.value = orderedIdList.value[currentIndex - 1];
         router.push(`#${currentId.value}`);
     }
 }
 
 const goToNextGroup = () => {
+    const currentIndex = orderedIdList.value.indexOf(currentId.value);
     if (checkNextGroup()) {
-        currentId.value++;
+        currentId.value = orderedIdList.value[currentIndex + 1];
         router.push(`#${currentId.value}`);
     }
 }
 
 onMounted(async () => {
     status.value = await getStatusUpitnika(ezu_id.value);
-    checkPreviousGroup();
-    checkNextGroup();
+    fetchOrderedIds();
 })
 </script>
 
@@ -246,6 +344,7 @@ onMounted(async () => {
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+    overflow: hidden;
 }
 
 .arrow_btn {
@@ -256,6 +355,7 @@ onMounted(async () => {
 
 .arrow_btn:hover {
     transform: scale(1.1);
+    transform-origin: center;
     opacity: 0.9;
 }
 
