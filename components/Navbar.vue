@@ -134,9 +134,9 @@ const toggleFinishPopup = () => {
 };
 
 const checkStatusUpitnika = async () => {
-    console.log("p_ezu_id: " + p_ezu_id);
+    // console.log("p_ezu_id: " + p_ezu_id);
     status.value = await getStatusUpitnika(parseInt(p_ezu_id));
-    console.log("Status upitnika: ", status.value);
+    // console.log("Status upitnika: ", status.value);
 }
 
 
@@ -170,7 +170,7 @@ const fetchVrsteUpitnika = async () => {
 }
 
 function handleChange(event) {
-    console.log('Odabrana vrijednost:', event.target.value);
+    // console.log('Odabrana vrijednost:', event.target.value);
 }
 
 const createUpitnik = async () => {

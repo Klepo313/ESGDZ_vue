@@ -87,10 +87,10 @@ const handleUpdateSelectedOptions = (selectedCheckboxes) => {
 //     return allItems.length > 0 ? allItems[allItems.length - 1] : null;
 // });
 
-// console.log("Upitnik: ", props.upitnikData)
-// console.log("evo ID: ", props.upitnikData[0].id)
-// console.log("Zadnji element: ", lastItem.value.id);
-// console.log("Velicina upitnika: ", totalSize.value);
+// // console.log("Upitnik: ", props.upitnikData)
+// // console.log("evo ID: ", props.upitnikData[0].id)
+// // console.log("Zadnji element: ", lastItem.value.id);
+// // console.log("Velicina upitnika: ", totalSize.value);
 
 const status = ref(null);
 // const firstGroupId = parseInt(props.upitnikData[0].id);
@@ -164,7 +164,7 @@ const fetchOrderedIds = async () => {
         console.error('Error fetching ordered IDs:', error);
     }
 
-    console.log("ORDERED: ", orderedIdList.value)
+    // console.log("ORDERED: ", orderedIdList.value)
     if (!(getGroupIdFromHash() === null)) {
         checkPreviousGroup();
         checkNextGroup();
@@ -181,8 +181,8 @@ const fetchOrderedIds = async () => {
 
 const checkPreviousGroup = () => {
     const back_arrow = document.getElementById('backButton');
-    console.log("ordirana lista: ", orderedIdList.value)
-    console.log("current ID: ", currentId.value)
+    // console.log("ordirana lista: ", orderedIdList.value)
+    // console.log("current ID: ", currentId.value)
     const currentIndex = orderedIdList.value.indexOf(currentId.value);
 
     if (currentIndex === -1) {

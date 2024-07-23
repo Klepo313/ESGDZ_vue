@@ -160,8 +160,8 @@ const toggleInfo = (upitnik) => {
 const sortUpitnike = async () => {
     for (let i = 0; i < upitnici.value.length; i++) {
         const data = await getStatusUpitnika(parseInt(upitnici.value[i].ezu_id));
-        // console.log(parseInt(upitnici.value[i].ezu_id), ", ", data);
-        // console.log("Status: ", data[0].ezu_status)
+        // // console.log(parseInt(upitnici.value[i].ezu_id), ", ", data);
+        // // console.log("Status: ", data[0].ezu_status)
         if (data[0].ezu_status == 0) {
             aktivniUpitnici.value.push(upitnici.value[i])
         } else {
@@ -169,15 +169,15 @@ const sortUpitnike = async () => {
         }
     }
 
-    console.log("Aktivni upitnici: ", aktivniUpitnici.value);
-    console.log("Zakljuceni upitnici: ", zakljuceniUpitnici.value);
+    // console.log("Aktivni upitnici: ", aktivniUpitnici.value);
+    // console.log("Zakljuceni upitnici: ", zakljuceniUpitnici.value);
 }
 
 const fetchUpitnici = async () => {
     try {
         const data = await getUpitnici(kor_korime.value, tvk_id.value);
         upitnici.value = data;
-        console.log(upitnici.value);
+        // console.log(upitnici.value);
 
         aktivniUpitnici.value = [];
         zakljuceniUpitnici.value = [];

@@ -75,7 +75,7 @@ const props = defineProps({
     selectedOptions: Object,
 });
 
-console.log("selectedOptions: ", props.selectedOptions);
+// console.log("selectedOptions: ", props.selectedOptions);
 
 const p_ezu_id = computed(() => {
     const id = upitnikInfoStore.ezu_id;

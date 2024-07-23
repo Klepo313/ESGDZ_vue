@@ -136,7 +136,7 @@ const fetchTotalAnsweredQuestions = async () => {
             // Ažuriraj grafikon
             // //totalChartRef.value.chartInstance.update();
             // if (totalChartRef.value) {
-            //     console.log("Updating total chart...");
+            //     // // // console.log("Updating total chart...");
             //     totalChartRef.value.update();
             // }
         }
@@ -146,7 +146,7 @@ const fetchTotalAnsweredQuestions = async () => {
 };
 
 // const updateTotalChart = () => {
-//     console.log(totalAnsweredQuestions)
+//     // // // console.log(totalAnsweredQuestions)
 //     // Ažuriraj podatke za Pie chart
 //     pieChartData.value.datasets[0].data = [
 //         totalAnsweredQuestions.value.uk_odgovoreno,
@@ -158,7 +158,7 @@ const fetchTotalAnsweredQuestions = async () => {
 // }
 
 // const updateGroupChart = () => {
-//     console.log(groupAnsweredQuestions)
+//     // // // console.log(groupAnsweredQuestions)
 //     // Ažuriraj podatke za Pie chart
 //     pieGroupChartData.value.datasets[0].data = [
 //         groupAnsweredQuestions.value.uk_odgovoreno,
@@ -189,7 +189,7 @@ const fetchAnsweredQuestionsForGroup = async () => {
                 // Ažuriraj grafikon
                 // // groupChartRef.value.chartInstance.update();
                 // if (groupChartRef.value) {
-                //     console.log("Updating group chart...");
+                //     // // // console.log("Updating group chart...");
                 //     groupChartRef.value.update();
                 // }
             }
@@ -299,8 +299,8 @@ const ezu_id = computed(() => {
 const totalAnsweredQuestions = computed(() => upitnikInfoStore.totalAnsweredQuestions);
 const groupAnsweredQuestions = computed(() => upitnikInfoStore.groupAnsweredQuestions);
 
-console.log(totalAnsweredQuestions.value);
-console.log(groupAnsweredQuestions.value);
+// // // console.log(totalAnsweredQuestions.value);
+// // // console.log(groupAnsweredQuestions.value);
 
 const pieChartData = ref({
     labels: ['Odgovoreno', 'Nije odgovoreno'],

@@ -90,7 +90,7 @@ const evu_naziv = computed(() => {
     return naziv;
 });
 
-console.log(evu_naziv.value);
+// console.log(evu_naziv.value);
 
 const ezu_id = computed(() => {
     const id = upitnikInfoStore.getEzuId;
@@ -151,7 +151,7 @@ const handleKeyPress = (event) => {
     if (event.ctrlKey && event.key === 'ArrowRight') {
         // Pozovi svoju funkciju ovdje
         event.preventDefault(); // Spriječava zadano ponašanje (kao što je otvaranje prozora pretraživača URL)
-        console.log("CTRL + L kliknut");
+        // console.log("CTRL + L kliknut");
     }
 };
 

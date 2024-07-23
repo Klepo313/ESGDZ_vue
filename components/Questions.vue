@@ -140,7 +140,7 @@ const status = ref(null);
 const finishedUpitnik = async () => {
     const result = await getStatusUpitnika(ezu_id.value);
     status.value = parseInt(result[0].ezu_status);
-    console.log("status: ", status.value);
+    // console.log("status: ", status.value);
 };
 
 
@@ -169,7 +169,7 @@ watch(() => router.currentRoute.value.hash, async (newHash, oldHash) => {
     } else {
         // Ako postoji ID grupe u hashu, postavi pitanja za tu grupu
         try {
-            console.log("Podaci: ", upitnikInfoStore.ezu_id, groupId);
+            // console.log("Podaci: ", upitnikInfoStore.ezu_id, groupId);
             const data = await getQuestionsForGroup(upitnikInfoStore.ezu_id, groupId);
             questions.value = data;
         } catch (error) {
@@ -218,7 +218,7 @@ const handleBlur = async (eou_id, value, inputElement) => {
         await fetchQuestions();
 
         let isAnswered = await checkIfAnswerIsAnswered(eou_id);
-        console.log(isAnswered)
+        // console.log(isAnswered)
         if (isAnswered[0].u_redu == 0) {
             inputElement.classList.add('border-red');
         } else {
@@ -250,7 +250,7 @@ const handleBlur = async (eou_id, value, inputElement) => {
 //         await setValueForAnswer(parseInt(eou_id), value, userId);
 
 //         let isAnswered = await checkIfAnswerIsAnswered(eou_id);
-//         console.log(isAnswered);
+//         // console.log(isAnswered);
 
 //         if (isAnswered[0].u_redu == 0) {
 //             temporaryAnswers.value[questionId].isInvalid = true;
@@ -275,7 +275,7 @@ const handleSelectChange = async (questionId, selectedValue, inputElement) => {
             await fetchQuestions();
 
             let isAnswered = await checkIfAnswerIsAnswered(parseInt(answer.eou_id));
-            console.log(isAnswered)
+            // console.log(isAnswered)
             if (isAnswered[0].u_redu == 0) {
                 inputElement.classList.add('border-red');
             } else {
@@ -301,7 +301,7 @@ const handleRadioChange = async (questionId, selectedValue, inputElement) => {
             await fetchQuestions();
 
             let isAnswered = await checkIfAnswerIsAnswered(parseInt(answer.eou_id));
-            console.log(isAnswered)
+            // console.log(isAnswered)
             if (isAnswered[0].u_redu == 0) {
                 inputElement.classList.add('border-red');
             } else {
@@ -350,7 +350,7 @@ const handleCheckboxChange = async (questionId, answerId, event, inputElement) =
             await fetchQuestions();
 
             let isAnswered = await checkIfAnswerIsAnswered(parseInt(answer.eou_id));
-            console.log(isAnswered)
+            // console.log(isAnswered)
             if (isAnswered[0].u_redu == 0) {
                 inputElement.classList.add('border-red');
             } else {
@@ -378,7 +378,7 @@ const initializeSelectedCheckboxes = () => {
             selectedCheckboxes.value[answer.eou_ept_id] = selectedIds;
         }
     });
-    // console.log("selectedCheckboxes prije emita: ", selectedCheckboxes.value);
+    // // console.log("selectedCheckboxes prije emita: ", selectedCheckboxes.value);
     emit('update-selected-options', selectedCheckboxes.value);
 };
 
