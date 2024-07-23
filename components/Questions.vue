@@ -17,9 +17,9 @@
                     <span v-if="question.ept_jedmjer && question.ept_jedmjer !== 'null'">
                         [{{ question.ept_jedmjer }}]
                     </span>
-                    <span v-if="question.ept_obvezan == 'D'" class="obavezno_text">
+                    <!-- <span v-if="question.ept_obvezan == 'D'" class="obavezno_text">
                         (Obavezno)
-                    </span>
+                    </span> -->
                 </li>
                 <div class="input_div">
                     <!-- TEKSTUALNI unos -->
@@ -145,7 +145,7 @@ const finishedUpitnik = async () => {
 
 
 const questions = ref([]);
-const answers = ref(null);
+const answers = ref([]);
 const temporaryAnswers = ref({});
 const visibleInfo = ref(0);
 const selectedCheckboxes = ref({});
@@ -207,6 +207,7 @@ const fetchAnswers = async () => {
 };
 
 const getAnswer = (questionId, field) => {
+    if (!answers.value) return '';
     const answer = answers.value.find(answer => answer.eou_ept_id === questionId);
     return answer ? answer[field] : '';
 };
