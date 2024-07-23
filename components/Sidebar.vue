@@ -38,9 +38,8 @@
                                         :class="{ 'selected-group': selectedGroupId === subcategory.id }">
                                         <font-awesome-icon icon="list-check" />
                                         <span class="sidebar-text">{{ subcategory.name }}</span>
-                                        <font-awesome-icon
-                                            v-if="!subcategory.children && answeredGroups[subcategory.id]"
-                                            class="arrow2" icon="circle-check" />
+                                        <font-awesome-icon class="arrow2" icon="circle-check"
+                                            v-if="answeredGroups[subcategory.id] !== undefined && answeredGroups[subcategory.id]" />
                                     </span>
                                 </li>
                             </ul>
