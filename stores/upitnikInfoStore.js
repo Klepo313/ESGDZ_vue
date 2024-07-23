@@ -51,7 +51,19 @@ export const useUpitnikInfoStore = defineStore('upitnik', {
             this.ezu_naziv = Cookies.get('ezu_naziv');
             this.ezu_mijenjao = Cookies.get('ezu_mijenjao');
             this.finished = Cookies.get('finished');
+        
+            // console.log('initializeStore: ', {
+            //     evu_sif: this.evu_sif,
+            //     ezu_ess_id: this.ezu_ess_id,
+            //     ezu_id: this.ezu_id,
+            //     ezu_ezp_id: this.ezu_ezp_id,
+            //     ess_id: this.ess_id,
+            //     ezu_naziv: this.ezu_naziv,
+            //     ezu_mijenjao: this.ezu_mijenjao,
+            //     finished: this.finished,
+            // });
         },
+        
         setEvuSif(evu_sif) {
             this.evu_sif = evu_sif;
             if (process.client) {
@@ -64,6 +76,7 @@ export const useUpitnikInfoStore = defineStore('upitnik', {
                 Cookies.set('evu_id', ezu_id, { expires: 7 });
             }
         },
+        
         setEzuEssId(ezu_ess_id) {
             this.ezu_ess_id = ezu_ess_id;
             if (process.client) {
