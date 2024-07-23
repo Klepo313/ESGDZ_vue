@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   ],
 
   build: {
-    transpile: [],
+    transpile: ['@fortawesome/vue-fontawesome'],
   },
 
   modules: [
