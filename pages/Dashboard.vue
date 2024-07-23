@@ -26,7 +26,7 @@
         </div>
         <div id="back_arrow">
             <nuxt-link to="/upitnik" class="arrow-icon">
-                <font-awesome-icon icon="arrow-left-long" />
+                <font-awesome-icon :icon="['fas', 'arrow-left-long']" />
             </nuxt-link>
         </div>
     </div>

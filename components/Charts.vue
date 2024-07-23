@@ -3,9 +3,9 @@
     <div>
         <div class="charts-div">
             <div class="heading">
-                <font-awesome-icon icon="chart-pie" />
+                <font-awesome-icon :icon="['fas', 'chart-pie']" />
                 <span>Dijagrami</span>
-                <font-awesome-icon @click="refreshData" class="rotate-icon" icon="rotate-right" />
+                <font-awesome-icon @click="refreshData" class="rotate-icon" :icon="['fas', 'rotate-right']" />
             </div>
             <div class="charts">
                 <div class="chart" v-if="selectedGroupName != 'nepoznato'">
