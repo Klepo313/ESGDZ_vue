@@ -1,21 +1,15 @@
 
-
-
-
-
-
-
-
-
 import fs from 'fs'
 import { defineNuxtConfig } from 'nuxt/config';
-
-
 
 export default defineNuxtConfig({
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'layout', mode: 'out-in' },
+  },
+  
+  router: {
+    options: './router.options.ts'
   },
 
   devtools: { enabled: true },
