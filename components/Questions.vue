@@ -469,6 +469,7 @@ ol {
 }
 
 li {
+    max-width: 700px;
     font-weight: 600;
     list-style-position: inside;
 }
