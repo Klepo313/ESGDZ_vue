@@ -46,7 +46,7 @@ const password = ref('');
 const router = useRouter();
 const public_url = 'https://esgdz-server.onrender.com';
 //const local_url = 'http://localhost:5000';
-const local_url = 'http://app.agrambanka.hr:5000';
+const local_url = 'https://app.agrambanka.hr:5000';
 
 const handleSubmit = async () => {
 
