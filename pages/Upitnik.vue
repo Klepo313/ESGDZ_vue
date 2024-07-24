@@ -99,13 +99,13 @@ import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
 
 onBeforeMount(() => {
-    const ekoParId = Cookies.get('eko_par_id_za');
-    const ekoId = Cookies.get('eko_id');
-    const ekoKorime = Cookies.get('eko_korime');
+    // const ekoParId = Cookies.get('eko_par_id_za');
+    // const ekoId = Cookies.get('eko_id');
+    // const ekoKorime = Cookies.get('eko_korime');
 
-    if (!ekoParId || !ekoId || !ekoKorime) {
-        return navigateTo('/login');
-    }
+    // if (!ekoParId || !ekoId || !ekoKorime) {
+    //     return navigateTo('/login');
+    // }
 })
 
 // Reactive property za prikazivanje Loading komponente
@@ -192,14 +192,20 @@ const fetchUpitnici = async () => {
     }
 };
 
-
 const setUpitnikData = (upitnik) => {
     try {
-        upitnikInfoStore.setEvuSif(upitnik.evu_sif);
-        upitnikInfoStore.setEzuEssId(upitnik.ezu_ess_id);
-        upitnikInfoStore.setEzuId(upitnik.ezu_id);
-        upitnikInfoStore.setEzuEzpId(upitnik.ezu_ezp_id);
-        upitnikInfoStore.setEzuNaziv(upitnik.evu_naziv);
+        upitnikInfoStore.setUpitnikInfo({
+            evu_sif: upitnik.evu_sif,
+            ezu_ess_id: upitnik.ezu_ess_id,
+            ezu_id: upitnik.ezu_id,
+            ezu_ezp_id: upitnik.ezu_ezp_id,
+            ezu_naziv: upitnik.evu_naziv
+        })
+        // upitnikInfoStore.setEvuSif(upitnik.evu_sif);
+        // upitnikInfoStore.setEzuEssId(upitnik.ezu_ess_id);
+        // upitnikInfoStore.setEzuId(upitnik.ezu_id);
+        // upitnikInfoStore.setEzuEzpId(upitnik.ezu_ezp_id);
+        // upitnikInfoStore.setEzuNaziv(upitnik.evu_naziv);
     } catch (error) {
         console.error('Pogreška pri spremanju u store');
         return error;
@@ -225,7 +231,7 @@ const formatDate = (dateStr) => {
 // });
 
 onMounted(async () => {
-    userInfoStore.initializeStore();
+    await userInfoStore.initializeStore();
     await fetchUpitnici();
 });
 </script>

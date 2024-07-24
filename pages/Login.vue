@@ -45,8 +45,8 @@ const username = ref('');
 const password = ref('');
 const router = useRouter();
 const public_url = 'https://esgdz-server.onrender.com';
-//const local_url = 'http://localhost:5000';
-const local_url = 'http://app.agrambanka.hr:5000';
+const local_url = 'http://localhost:5000';
+//const local_url = 'http://app.agrambanka.hr:5000';
 
 const handleSubmit = async () => {
 
@@ -62,38 +62,22 @@ const handleSubmit = async () => {
             password: password.value
         });
 
-        // console.log(response.data);
-
-
-
-        // Ako prijava uspije, prosljedi korisnika na '/upitnici'
+        console.log(response.data);
         if (response.data.success) {
-            userInfoStore.setEkoParId(parseInt(response.data.user.eko_par_id_za))
-            userInfoStore.setEkoId(parseInt(response.data.user.eko_id))
-            userInfoStore.setEkoKorime(response.data.user.eko_korime)
-
+            userInfoStore.setUserInfo({
+                eko_par_id_za: parseInt(response.data.user.eko_par_id_za),
+                eko_id: parseInt(response.data.user.eko_id),
+                eko_korime: response.data.user.eko_korime
+            });
             router.push('/upitnik');
         }
+
     } catch (error) {
         // Call the function to see the effect
         highlightBorders();
         prijava.style.display = "inline";
         spin_icon.style.display = 'none';
-        console.error('Greška prilikom prijave:', error)
-
-        // const popUpLogin = document.getElementById('pop-up-login');
-        // popUpLogin.style.display = 'block';
-        // popUpLogin.classList.add('slideIn');
-
-        // // Postavljanje vremena za nestajanje pop-up-a nakon nekoliko sekundi
-        // setTimeout(() => {
-        //     popUpLogin.classList.remove('slideIn');
-        //     popUpLogin.classList.add('slideOut');
-
-        //     setTimeout(() => {
-        //         popUpLogin.style.display = 'none';
-        //     }, 500);
-        // }, 3000);
+        console.error('Korisnik nije pronađen.')
     }
 };
 

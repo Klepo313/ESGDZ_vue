@@ -47,13 +47,13 @@ onBeforeMount(() => {
     // const ekoId = localStorage.getItem('eko_id');
     // const ekoKorime = localStorage.getItem('eko_korime');
 
-    const ekoParId = Cookies.get('eko_par_id_za');
-    const ekoId = Cookies.get('eko_id');
-    const ekoKorime = Cookies.get('eko_korime');
+    // const ekoParId = Cookies.get('eko_par_id_za');
+    // const ekoId = Cookies.get('eko_id');
+    // const ekoKorime = Cookies.get('eko_korime');
 
-    if (!ekoParId || !ekoId || !ekoKorime) {
-        return navigateTo('/login');
-    }
+    // if (!ekoParId || !ekoId || !ekoKorime) {
+    //     return navigateTo('/login');
+    // }
 })
 
 const upitnikInfoStore = useUpitnikInfoStore();
@@ -87,7 +87,7 @@ const ezu_ess_id = computed(() => {
 
 const evu_naziv = computed(() => {
     const naziv = upitnikInfoStore.getEzuNaziv;
-    return naziv;
+    return naziv ? naziv : '';;
 });
 
 // console.log(evu_naziv.value);
@@ -145,15 +145,6 @@ watch(() => router.currentRoute.value.hash, async (newHash, oldHash) => {
     const groupId = getGroupIdFromHash();
     selectedGroupId.value = groupId;
 });
-
-
-const handleKeyPress = (event) => {
-    if (event.ctrlKey && event.key === 'ArrowRight') {
-        // Pozovi svoju funkciju ovdje
-        event.preventDefault(); // Spriječava zadano ponašanje (kao što je otvaranje prozora pretraživača URL)
-        // console.log("CTRL + L kliknut");
-    }
-};
 
 onMounted(async () => {
     userInfoStore.initializeStore();
