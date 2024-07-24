@@ -150,11 +150,6 @@ onMounted(async () => {
     userInfoStore.initializeStore();
     upitnikInfoStore.initializeStore();
     await loadData();
-    window.addEventListener('keydown', handleKeyPress);
-});
-
-onBeforeUnmount(() => {
-    window.removeEventListener('keydown', handleKeyPress);
 });
 
 </script>
