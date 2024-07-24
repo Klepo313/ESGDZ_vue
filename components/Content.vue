@@ -26,6 +26,9 @@
                     Provjeri odgovore
                 </button>-->
                 <div class="bckfwrd">
+                    <!-- <span class="ctrl">
+                        CTRL + L/R
+                    </span> -->
                     <button type="button" id="backButton" class="arrow_btn" @click="goToPreviousGroup">
                         <font-awesome-icon icon="arrow-left" size="lg" />
                     </button>
@@ -75,22 +78,6 @@ const emit = defineEmits(['update-selected-options']);
 const handleUpdateSelectedOptions = (selectedCheckboxes) => {
     emit('update-selected-options', selectedCheckboxes.value);
 }
-
-// const totalSize = computed(() => {
-//     return props.upitnikData.reduce((count, item) => {
-//         return count + (item.children ? item.children.length : 0);
-//     }, 0);
-// });
-
-// const lastItem = computed(() => {
-//     const allItems = props.upitnikData.flatMap(item => item.children || []);
-//     return allItems.length > 0 ? allItems[allItems.length - 1] : null;
-// });
-
-// // console.log("Upitnik: ", props.upitnikData)
-// // console.log("evo ID: ", props.upitnikData[0].id)
-// // console.log("Zadnji element: ", lastItem.value.id);
-// // console.log("Velicina upitnika: ", totalSize.value);
 
 const status = ref(null);
 // const firstGroupId = parseInt(props.upitnikData[0].id);
@@ -244,10 +231,26 @@ const goToNextGroup = () => {
     }
 }
 
+const handleKeyPress = (event) => {
+    if (event.ctrlKey && event.key === 'ArrowRight') {
+        goToNextGroup();
+        event.preventDefault();
+    }
+    if (event.ctrlKey && event.key === 'ArrowLeft') {
+        goToPreviousGroup();
+        event.preventDefault();
+    }
+};
+
 onMounted(async () => {
     status.value = await getStatusUpitnika(ezu_id.value);
     fetchOrderedIds();
+    window.addEventListener('keydown', handleKeyPress);
 })
+
+onBeforeUnmount(() => {
+    window.removeEventListener('keydown', handleKeyPress);
+});
 </script>
 
 <style scoped>
@@ -322,7 +325,7 @@ onMounted(async () => {
     /* outline: 1px solid red; */
     /* min-height: 80vh; Visina skrolajućeg dijela (80% visine prozora) */
     margin-top: 10px;
-    overflow-y: auto;
+    overflow: visible;
     /* Omogućuje skrolanje samo po vertikali */
     position: relative;
     /* Za pseudo-elemente */
@@ -347,12 +350,32 @@ onMounted(async () => {
 }
 
 .bckfwrd {
+    position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    overflow: hidden;
+    /* overflow: hidden; */
+}
+
+.bckfwrd:hover .ctrl {
+    display: block;
+    transition: transform 0.3s ease-in-out;
+}
+
+.ctrl {
+    display: none;
+    position: absolute;
+    font-size: 12px;
+    padding: 2px;
+    width: 100%;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    top: -25px;
+    overflow: visible;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
 }
 
 .arrow_btn {
