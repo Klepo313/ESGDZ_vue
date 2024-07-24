@@ -7,7 +7,8 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "dev:ssl": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 nuxt dev --https --ssl-cert ../Cert/star_agrambanka_hr.crt --ssl-key ../Cert/star_agrambanka.hr.pem --host 10.100.1.73 --port 3000"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
@@ -32,6 +33,7 @@
     "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nuxt-primevue": "^3.0.0",
     "vite-plugin-vuetify": "^2.0.3"
   }

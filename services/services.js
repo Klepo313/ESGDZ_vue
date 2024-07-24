@@ -5,7 +5,7 @@ const limit = pLimit(5); // Ograničenje na 5 istovremenih konekcija
 
 const public_url = 'https://esgdz-server.onrender.com';
 export const local_url = 'http://localhost:5000';
-// const local_url = 'http://app.agrambanka.hr:5000';
+//const local_url = 'http://app.agrambanka.hr:5000';
 
 
 export async function getVrsteUpitnika() {

@@ -1,3 +1,17 @@
+
+
+
+
+
+
+
+
+
+import fs from 'fs'
+import { defineNuxtConfig } from 'nuxt/config';
+
+
+
 export default defineNuxtConfig({
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
@@ -5,6 +19,14 @@ export default defineNuxtConfig({
   },
 
   devtools: { enabled: true },
+
+  // server :  {
+  //   host: '0.0.0.0',
+  //   https: {
+  //     key: fs.readFileSync('../Cert/star_agrambanka.hr.pem'),
+  //     cert: fs.readFileSync('../Cert/star_agrambanka_hr.crt')
+  //   }
+  // },
 
   css: [
     '@fortawesome/fontawesome-svg-core/styles.css',
@@ -25,10 +47,10 @@ export default defineNuxtConfig({
   },
 
   pinia: {
-    autoImports: [
-      ...['defineStore'],
-      ['defineStore', 'acceptHMRUpdate'],
-    ] as string[],
+    // autoImports: [
+    //   ...['defineStore'],
+    //   ['defineStore', 'acceptHMRUpdate'],
+    // ] as string[],
   },
 
   plugins: [
