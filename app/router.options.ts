@@ -24,5 +24,11 @@ export default <RouterConfig>{
       component: Upitnik,
       props: true
     },
+    {
+      path: '/:pathMatch(.*)*',
+      component: () => import('~/pages/NotFound.vue'),
+      props: true,
+      name: 'NotFound'
+    }
   ],
 }
