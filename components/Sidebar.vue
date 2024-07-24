@@ -38,9 +38,8 @@
                                         :class="{ 'selected-group': selectedGroupId === subcategory.id }">
                                         <font-awesome-icon icon="list-check" />
                                         <span class="sidebar-text">{{ subcategory.name }}</span>
-                                        <font-awesome-icon
-                                            v-if="!subcategory.children && answeredGroups[subcategory.id]"
-                                            class="arrow2" icon="circle-check" />
+                                        <font-awesome-icon class="arrow2" icon="circle-check"
+                                            v-if="answeredGroups[subcategory.id] !== undefined && answeredGroups[subcategory.id]" />
                                     </span>
                                 </li>
                             </ul>
@@ -75,7 +74,7 @@ const props = defineProps({
     selectedOptions: Object,
 });
 
-console.log("selectedOptions: ", props.selectedOptions);
+// console.log("selectedOptions: ", props.selectedOptions);
 
 const p_ezu_id = computed(() => {
     const id = upitnikInfoStore.ezu_id;
@@ -93,20 +92,37 @@ const checkIfGroupIsAnswered = async (p_ezu_id, p_ess_id) => {
 
 const updateAnsweredGroups = async () => {
     const newAnsweredGroups = {};
-    for (const group of props.upitnikData) {
-        const isAnswered = await checkIfGroupIsAnswered(p_ezu_id.value, group.id);
-        newAnsweredGroups[group.id] = isAnswered;
+    const promises = [];
+
+    const addToPromises = async (group) => {
+        promises.push(checkIfGroupIsAnswered(p_ezu_id.value, group.id).then(isAnswered => {
+            newAnsweredGroups[group.id] = isAnswered;
+        }));
+
         for (const category of group.children) {
-            const isAnswered = await checkIfGroupIsAnswered(p_ezu_id.value, category.id);
-            newAnsweredGroups[category.id] = isAnswered;
+            promises.push(checkIfGroupIsAnswered(p_ezu_id.value, category.id).then(isAnswered => {
+                newAnsweredGroups[category.id] = isAnswered;
+            }));
+
             for (const subcategory of category.children) {
-                const isAnswered = await checkIfGroupIsAnswered(p_ezu_id.value, subcategory.id);
-                newAnsweredGroups[subcategory.id] = isAnswered;
+                promises.push(checkIfGroupIsAnswered(p_ezu_id.value, subcategory.id).then(isAnswered => {
+                    newAnsweredGroups[subcategory.id] = isAnswered;
+                }));
             }
         }
+    };
+
+    // Dodaj sve pozive u listu
+    for (const group of props.upitnikData) {
+        await addToPromises(group);
     }
+
+    // Čekaj da svi pozivi završe
+    await Promise.all(promises);
+
     answeredGroups.value = newAnsweredGroups;
 };
+
 
 watchEffect(() => {
     if (p_ezu_id.value && props.upitnikData.length > 0) {

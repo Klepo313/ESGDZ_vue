@@ -1,71 +1,73 @@
 <template>
-    <div class="pop-up" v-if="isPopupVisible">
-        <div class="pop-up-container">
-            <div class="pp-heading">
-                <font-awesome-icon class="pp-icon-file" icon="file-circle-plus" size="lg" />
-                Novi upitnik
-                <font-awesome-icon @click="togglePopup" class="pp-icon-close" icon="close" size="lg" />
+    <div style="width: 100%; height: 100%;">
+        <div class="pop-up" v-if="isPopupVisible">
+            <div class="pop-up-container">
+                <div class="pp-heading">
+                    <font-awesome-icon class="pp-icon-file" icon="file-circle-plus" size="lg" />
+                    Novi upitnik
+                    <font-awesome-icon @click="togglePopup" class="pp-icon-close" icon="close" size="lg" />
+                </div>
+                <form class="pp-content">
+                    <h4>Vrsta upitnika</h4>
+                    <select name="select_option" id="select_option" required v-model="selectedEvuSif"
+                        @change="handleChange">
+                        <option value="" disabled>-- Odaberi opciju --</option>
+                        <option v-for="upitnik in vrsteUpitnika" :value="upitnik.evu_sif" :key="upitnik.ess_id">
+                            {{ upitnik.evu_naziv }}
+                        </option>
+                    </select>
+                    <!-- <font-awesome-icon icon="chevron-down" class="select-icon" size="lg" /> -->
+                    <!-- Update your button to call the new async method -->
+                    <button type="submit" id="createBtn" @click.prevent="handleButtonClick">Kreiraj upitnik</button>
+                </form>
             </div>
-            <form class="pp-content">
-                <h4>Vrsta upitnika</h4>
-                <select name="select_option" id="select_option" required v-model="selectedEvuSif"
-                    @change="handleChange">
-                    <option value="" disabled>-- Odaberi opciju --</option>
-                    <option v-for="upitnik in vrsteUpitnika" :value="upitnik.evu_sif" :key="upitnik.ess_id">
-                        {{ upitnik.evu_naziv }}
-                    </option>
-                </select>
-                <!-- <font-awesome-icon icon="chevron-down" class="select-icon" size="lg" /> -->
-                <!-- Update your button to call the new async method -->
-                <button type="submit" id="createBtn" @click.prevent="handleButtonClick">Kreiraj upitnik</button>
-            </form>
         </div>
-    </div>
 
-    <div class="pop-up" v-if="isFinishPopupVisible">
-        <div class="pop-up-container">
-            <div class="pp-heading">
-                <font-awesome-icon class="info_icon" icon="circle-info" size="lg" />
-                Ovom radnjom upitnik će biti zaključan i neće biti moguće dalje uređivanje.
-                <span class="secQuestion">Želite li nastaviti dalje?</span>
-                <font-awesome-icon @click="toggleFinishPopup" class="pp-icon-close" icon="close" size="lg" />
+        <div class="pop-up" v-if="isFinishPopupVisible">
+            <div class="pop-up-container">
+                <div class="pp-heading">
+                    <font-awesome-icon class="info_icon" icon="circle-info" size="lg" />
+                    Ovom radnjom upitnik će biti zaključan i neće biti moguće dalje uređivanje.
+                    <span class="secQuestion">Želite li nastaviti dalje?</span>
+                    <font-awesome-icon @click="toggleFinishPopup" class="pp-icon-close" icon="close" size="lg" />
+                </div>
+                <form class="pp-content" style="gap: 5px;">
+                    <button class="cancelBtn" type="button" @click="toggleFinishPopup">Odustani</button>
+                    <button class="finishBtn" id="finishUpitnikBtn" type="button" @click="setLockUpitnik">
+                        <!--@click.prevent=""-->
+                        <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg" />
+                        Zaključaj upitnik
+                    </button>
+                </form>
             </div>
-            <form class="pp-content" style="gap: 5px;">
-                <button class="cancelBtn" type="button" @click="toggleFinishPopup">Odustani</button>
-                <button class="finishBtn" id="finishUpitnikBtn" type="button" @click="setLockUpitnik">
-                    <!--@click.prevent=""-->
+        </div>
+
+        <header>
+            <div class="hello-div">
+                <div class="dec-div" />
+                <span class="greeting_text">
+                    {{ greetingText }} <span class="greeting_name">{{ korKorime }}</span>
+                </span>
+            </div>
+            <div class="buttons">
+                <button v-if="isDashboardRoute && status && status.length > 0 && status[0].ezu_status == 0"
+                    class="activeButton" @click="toggleFinishPopup">
                     <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg" />
                     Zaključaj upitnik
                 </button>
-            </form>
-        </div>
+
+                <button v-if="isUpitnikRoute" @click="togglePopup(); fetchVrsteUpitnika();" class="activeButton">
+                    <font-awesome-icon class="nav-icon" icon="file-circle-plus" size="lg" />
+                    Novi upitnik
+                </button>
+                <button @click="logout" class="logout_btn">
+                    <font-awesome-icon class="nav-icon" :icon="['fas', 'arrow-right-from-bracket']" size="lg" />
+                    Odjava
+                </button>
+                <loading v-if="isLogedOut" />
+            </div>
+        </header>
     </div>
-
-    <header>
-        <div class="hello-div">
-            <div class="dec-div" />
-            <span class="greeting_text">
-                {{ greetingText }} <span class="greeting_name">{{ korKorime }}</span>
-            </span>
-        </div>
-        <div class="buttons">
-            <button v-if="isDashboardRoute && status && status.length > 0 && status[0].ezu_status == 0"
-                class="activeButton" @click="toggleFinishPopup">
-                <font-awesome-icon class="nav-icon" icon="clipboard-check" size="lg" />
-                Zaključaj upitnik
-            </button>
-
-            <button v-if="isUpitnikRoute" @click="togglePopup(); fetchVrsteUpitnika();" class="activeButton">
-                <font-awesome-icon class="nav-icon" icon="file-circle-plus" size="lg" />
-                Novi upitnik
-            </button>
-            <button @click="logout" class="logout_btn">
-                <font-awesome-icon class="nav-icon" icon="arrow-right-from-bracket" size="lg" />
-                Odjava
-            </button>
-            <loading v-if="isLogedOut" />
-        </div>
-    </header>
 </template>
 
 <script setup>
@@ -118,7 +120,10 @@ const isUpitnikRoute = computed(() => route.path === '/upitnik');
 
 const isDashboardRoute = computed(() => route.path === '/');
 
-const p_ezu_id = computed(() => upitnikInfoStore.ezu_id).value;
+const p_ezu_id = computed(() => {
+    const id = upitnikInfoStore.getEzuId;
+    return isNaN(id) ? 0 : parseInt(id);
+});
 
 // Reactive property to control popup visibility
 const isPopupVisible = ref(false);
@@ -134,9 +139,7 @@ const toggleFinishPopup = () => {
 };
 
 const checkStatusUpitnika = async () => {
-    console.log("p_ezu_id: " + p_ezu_id);
-    status.value = await getStatusUpitnika(parseInt(p_ezu_id));
-    console.log("Status upitnika: ", status.value);
+    status.value = await getStatusUpitnika(parseInt(p_ezu_id.value));
 }
 
 
@@ -170,7 +173,7 @@ const fetchVrsteUpitnika = async () => {
 }
 
 function handleChange(event) {
-    console.log('Odabrana vrijednost:', event.target.value);
+    // console.log('Odabrana vrijednost:', event.target.value);
 }
 
 const createUpitnik = async () => {
@@ -192,8 +195,10 @@ const handleButtonClick = async () => {
 };
 
 onMounted(async () => {
+    upitnikInfoStore.initializeStore();
     await checkStatusUpitnika();
 });
+
 
 </script>
 

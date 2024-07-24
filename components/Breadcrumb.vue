@@ -87,7 +87,7 @@ watch(() => props.selectedGroupId, (newId) => {
     }
 }, { immediate: true });
 
-console.log(breadcrumber.value);
+// console.log(breadcrumber.value);
 
 watch(() => route.fullPath, (newPath) => {
     if (newPath === '/') {

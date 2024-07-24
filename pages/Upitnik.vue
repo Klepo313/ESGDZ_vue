@@ -13,7 +13,7 @@
                 <div class="content-div active-div">
                     <h2>Aktivni upitnici</h2>
                     <span v-if="!aktivniUpitnici || aktivniUpitnici.length === 0" class="info_empty">
-                        <font-awesome-icon icon="circle-info" size="s" />
+                        <font-awesome-icon icon="circle-info" />
                         Nema aktivnih upitnika
                     </span>
                     <TransitionGroup v-else name="list" tag="div" class="upitnici">
@@ -49,7 +49,7 @@
                 <div class="content-div inactive-div">
                     <h2>Zaključani upitnici</h2>
                     <span v-if="!zakljuceniUpitnici || zakljuceniUpitnici.length === 0" class="info_empty">
-                        <font-awesome-icon icon="circle-info" size="s" />
+                        <font-awesome-icon icon="circle-info" />
                         Nema zaključanih upitnika
                     </span>
                     <TransitionGroup v-else name="list" tag="div" class="upitnici">
@@ -160,8 +160,8 @@ const toggleInfo = (upitnik) => {
 const sortUpitnike = async () => {
     for (let i = 0; i < upitnici.value.length; i++) {
         const data = await getStatusUpitnika(parseInt(upitnici.value[i].ezu_id));
-        // console.log(parseInt(upitnici.value[i].ezu_id), ", ", data);
-        // console.log("Status: ", data[0].ezu_status)
+        // // console.log(parseInt(upitnici.value[i].ezu_id), ", ", data);
+        // // console.log("Status: ", data[0].ezu_status)
         if (data[0].ezu_status == 0) {
             aktivniUpitnici.value.push(upitnici.value[i])
         } else {
@@ -169,19 +169,21 @@ const sortUpitnike = async () => {
         }
     }
 
-    console.log("Aktivni upitnici: ", aktivniUpitnici.value);
-    console.log("Zakljuceni upitnici: ", zakljuceniUpitnici.value);
+    // console.log("Aktivni upitnici: ", aktivniUpitnici.value);
+    // console.log("Zakljuceni upitnici: ", zakljuceniUpitnici.value);
 }
 
 const fetchUpitnici = async () => {
+    upitnici.value = [];
+    aktivniUpitnici.value = [];
+    zakljuceniUpitnici.value = [];
+    // console.log(upitnici.value, aktivniUpitnici.value, zakljuceniUpitnici.value);
     try {
         const data = await getUpitnici(kor_korime.value, tvk_id.value);
         upitnici.value = data;
-        console.log(upitnici.value);
+        // console.log(upitnici.value);
 
-        aktivniUpitnici.value = [];
-        zakljuceniUpitnici.value = [];
-        sortUpitnike();
+        await sortUpitnike();
 
     } catch (error) {
         console.error('Pogreška prilikom dohvaćanja upitnika:', error);
@@ -189,6 +191,7 @@ const fetchUpitnici = async () => {
         isLoading.value = false;
     }
 };
+
 
 const setUpitnikData = (upitnik) => {
     try {
@@ -211,11 +214,11 @@ const formatDate = (dateStr) => {
     return `${day}.${month}.${year}`;
 };
 
-watch(tvk_id, async (newTvkId) => {
-    if (newTvkId) {
-        await fetchUpitnici();
-    }
-});
+// watch(tvk_id, async (newTvkId) => {
+//     if (newTvkId) {
+//         await fetchUpitnici();
+//     }
+// });
 
 // watchEffect(async () => {
 //     await fetchUpitnici();

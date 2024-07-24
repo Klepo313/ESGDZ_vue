@@ -87,10 +87,10 @@ const handleUpdateSelectedOptions = (selectedCheckboxes) => {
 //     return allItems.length > 0 ? allItems[allItems.length - 1] : null;
 // });
 
-// console.log("Upitnik: ", props.upitnikData)
-// console.log("evo ID: ", props.upitnikData[0].id)
-// console.log("Zadnji element: ", lastItem.value.id);
-// console.log("Velicina upitnika: ", totalSize.value);
+// // console.log("Upitnik: ", props.upitnikData)
+// // console.log("evo ID: ", props.upitnikData[0].id)
+// // console.log("Zadnji element: ", lastItem.value.id);
+// // console.log("Velicina upitnika: ", totalSize.value);
 
 const status = ref(null);
 // const firstGroupId = parseInt(props.upitnikData[0].id);
@@ -154,17 +154,27 @@ watch(() => router.currentRoute.value.hash, async (newHash, oldHash) => {
 //     }
 // }
 
+// Funkcija za uklanjanje duplikata iz niza, ali ostavlja jednu instancu svakog broja
+const keepOneInstance = (arr) => {
+    // Koristi Set za automatsko uklanjanje duplikata
+    const uniqueSet = new Set(arr);
+
+    // Pretvori Set natrag u niz
+    return Array.from(uniqueSet);
+};
+
 const fetchOrderedIds = async () => {
     try {
         const response = await getOrderedIDs();
         orderedIdList.value = response
             .filter(item => item.ess_id_new !== null) // Filtriraj null vrijednosti
             .map(item => Number(item.ess_id_new));   // Mapiraj u niz brojeva
+        orderedIdList.value = keepOneInstance(orderedIdList.value);
     } catch (error) {
         console.error('Error fetching ordered IDs:', error);
     }
 
-    console.log("ORDERED: ", orderedIdList.value)
+    // console.log("ORDERED: ", orderedIdList.value)
     if (!(getGroupIdFromHash() === null)) {
         checkPreviousGroup();
         checkNextGroup();
@@ -181,8 +191,6 @@ const fetchOrderedIds = async () => {
 
 const checkPreviousGroup = () => {
     const back_arrow = document.getElementById('backButton');
-    console.log("ordirana lista: ", orderedIdList.value)
-    console.log("current ID: ", currentId.value)
     const currentIndex = orderedIdList.value.indexOf(currentId.value);
 
     if (currentIndex === -1) {
@@ -351,16 +359,20 @@ onMounted(async () => {
     outline: none;
     background: none;
     border: none;
+    border-radius: 50%;
+    padding: 5px;
+    width: 28px;
 }
 
 .arrow_btn:hover {
-    transform: scale(1.1);
     transform-origin: center;
-    opacity: 0.9;
+    background-color: rgb(224, 224, 224);
+    cursor: pointer;
 }
 
 .arrow_btn:active {
-    transform: scale(1.2);
+    background-color: rgb(158, 158, 158);
+    opacity: 1;
 }
 
 .no-hover {
