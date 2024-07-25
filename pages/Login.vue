@@ -24,6 +24,10 @@
                         <span class="login-btn-text">Prijava</span>
                         <font-awesome-icon id="spin-icon" icon="spinner" size="xl" spin />
                     </button>
+                    <span class="wrongPass">
+                        <font-awesome-icon :icon="['far', 'circle-xmark']" />
+                        Krivo uneseno korisničko ime ili lozinka
+                    </span>
                 </form>
             </div>
             <span class="footer-text">© Agram banka Zagreb članica je Agram EEIG</span>
@@ -83,17 +87,20 @@ const handleSubmit = async () => {
 
 // Function to change border styles and revert after 5 seconds
 const highlightBorders = () => {
-    const usernameField = document.getElementById('username')
-    const passwordField = document.getElementById('password')
+    const usernameField = document.getElementById('username');
+    const passwordField = document.getElementById('password');
+    const wrongPass = document.getElementsByClassName("wrongPass")[0];
 
     // Change border styles to red
     usernameField.style.border = '3px solid red';
     passwordField.style.border = '3px solid red';
+    wrongPass.style.display = "inline";
 
     // Set timeout to revert border styles after 5 seconds
     setTimeout(() => {
         usernameField.style.border = '';  // Revert to default
         passwordField.style.border = '';  // Revert to default
+        wrongPass.style.display = "none";
     }, 3000);  // 5000 milliseconds = 5 seconds
 };
 
@@ -197,8 +204,10 @@ onMounted(() => {
 }
 
 form {
+    position: relative;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 20px;
 }
 
@@ -240,6 +249,7 @@ button {
     padding: 12px 0px;
     border-radius: 5px;
     background-color: var(--primary-color);
+    width: 100%;
 }
 
 #spin-icon {
@@ -261,5 +271,13 @@ button:active {
     width: 100%;
     bottom: 30px;
     opacity: 60%;
+}
+
+.wrongPass {
+    display: none;
+    color: rgb(206, 0, 0);
+    font-weight: 600;
+    position: absolute;
+    bottom: -40px;
 }
 </style>
