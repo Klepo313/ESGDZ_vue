@@ -1,6 +1,12 @@
 <template>
   <div>
-    <NuxtPage />
+    <NuxtPage class="page" />
+    <div class="device">
+      <font-awesome-icon :icon="['fas', 'laptop']" size="2xl" style="margin-bottom: 10px;" /> <br>
+      Stranica nije podržana za mobilne ili tablet uređaje. <br> Pokušajte na laptopu ili desktop uređaju s minimalnom
+      širinom zaslona od
+      1024px.
+    </div>
   </div>
 </template>
 
@@ -62,6 +68,31 @@ useHead({
   transition: all 100ms ease-in-out;
   scroll-behavior: smooth;
   text-wrap: wrap;
+}
+
+.device {
+  position: absolute;
+  top: 0px;
+  padding: 100px 40px 0px 40px;
+  outline: auto;
+  height: 100dvh;
+  width: 100%;
+  text-align: center;
+  background-color: white;
+  z-index: 99;
+  text-wrap: wrap;
+  display: none;
+}
+
+@media screen and (max-width: 1024px) {
+  .page {
+    display: none;
+  }
+
+  .device {
+    display: block;
+    /* The width is 100%, when the viewport is 800px or smaller */
+  }
 }
 
 ::placeholder {

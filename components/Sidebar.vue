@@ -1,4 +1,4 @@
-<template>
+sidebar-main<template>
     <div>
         <div class="sidebar">
             <span v-if="upitnik && upitnik[0]" class="sidebar-main router_span" @click="toggleExpanded_main">
@@ -344,5 +344,19 @@ onBeforeUnmount(() => {
 
 .arrow-sub {
     opacity: 0.3;
+}
+
+@media screen and (max-width: 1224px) {
+    .sidebar-main {
+        font-size: 14px;
+    }
+
+    .sidebar-main-text {
+        font-size: 14px;
+    }
+
+    .sidebar-list {
+        font-size: 13px;
+    }
 }
 </style>

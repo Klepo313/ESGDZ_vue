@@ -241,4 +241,10 @@ onMounted(async () => {
     grid-column: 3;
     border-radius: 10px;
 }
+
+@media screen and (max-width: 1224px) {
+    .grid {
+        grid-template-columns: 250px auto 200px;
+    }
+}
 </style>

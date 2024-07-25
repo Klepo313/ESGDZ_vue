@@ -420,65 +420,9 @@ header {
 }
 
 /* Media Queries for responsiveness */
-@media (max-width: 1024px) {
+@media screen and (max-width: 1224px) {
     .hello-div {
-        font-size: 20px;
-    }
-
-    .buttons>button {
-        padding: 0px 20px;
-    }
-
-    .pp-heading {
-        font-size: 14px;
-    }
-
-    .pp-content h4 {
-        font-size: 16px;
-    }
-
-    .pp-content select {
-        font-size: 14px;
-    }
-
-    #createBtn {
-        padding: 10px 0px;
-    }
-
-    .pop-up-container {
-        width: 400px;
-        padding: 15px;
-    }
-}
-
-@media (max-width: 768px) {
-    .hello-div {
-        font-size: 18px;
-    }
-
-    .buttons>button {
-        padding: 0px 15px;
-    }
-
-    .pp-heading {
-        font-size: 12px;
-    }
-
-    .pp-content h4 {
-        font-size: 14px;
-    }
-
-    .pp-content select {
-        font-size: 12px;
-    }
-
-    #createBtn {
-        padding: 8px 0px;
-    }
-
-    .pop-up-container {
-        width: 360px;
-        padding: 10px;
+        font-size: 22px;
     }
 }
 </style>

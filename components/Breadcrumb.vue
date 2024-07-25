@@ -216,4 +216,10 @@ li {
     align-items: center;
     gap: 10px;
 }
+
+@media screen and (max-width: 1224px) {
+    .link {
+        font-size: 14px;
+    }
+}
 </style>

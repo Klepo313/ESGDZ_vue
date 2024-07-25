@@ -21,14 +21,7 @@
         <div class="component-div">
             <div class="content-div">
                 <h2>Pitanja</h2>
-                <!--<button id="checkBtn" type="button" disabled>
-                    <font-awesome-icon icon="check-double" />
-                    Provjeri odgovore
-                </button>-->
                 <div class="bckfwrd">
-                    <!-- <span class="ctrl">
-                        CTRL + L/R
-                    </span> -->
                     <button type="button" id="backButton" class="arrow_btn" @click="goToPreviousGroup">
                         <font-awesome-icon icon="arrow-left" size="lg" />
                     </button>
@@ -36,15 +29,6 @@
                         <font-awesome-icon icon="arrow-right" size="lg" />
                     </button>
                 </div>
-                <!-- *STARI KOD
-                 <div class="bckfwrd">
-                    <button type="button" id="backButton" class="arrow_btn" @click="goToPreviousGroup">
-                        <font-awesome-icon icon="arrow-left" size="lg" />
-                    </button>
-                    <button type="button" id="fwrdButton" class="arrow_btn" @click="goToNextGroup">
-                        <font-awesome-icon icon="arrow-right" size="lg" />
-                    </button>
-                </div> -->
             </div>
             <Questions :selectedGroupId="selectedGroupId" @update-selected-options="handleUpdateSelectedOptions" />
             <!--  :ess_id="ezu_ess_id"-->
@@ -279,18 +263,6 @@ onBeforeUnmount(() => {
     cursor: pointer;
 }
 
-/* #checkBtn:hover {
-    background-color: rgba(111, 111, 111, 0.118);
-}
-
-#checkBtn:active {
-    transform: scale(1.05);
-} */
-
-/* #checkBtn:hover {
-    border-bottom: 1px solid black;
-} */
-
 .h1-div {
     display: inline-block;
     position: relative;
@@ -404,5 +376,16 @@ onBeforeUnmount(() => {
 
 .no-active:active {
     pointer-events: none;
+}
+
+@media screen and (max-width: 1224px) {
+    h1 {
+        font-size: 25px;
+    }
+
+    .h1-rctg {
+        height: 8px;
+        bottom: 5px;
+    }
 }
 </style>
